@@ -203,7 +203,7 @@ export default function Checkout() {
             />
             <span>
               Acepto que es <strong>venta a pedido</strong> con demora estimada de 3-7 días hábiles desde la
-              confirmación del pago (compramos a nuestro distribuidor Vonixx tras tu compra).
+              confirmación del pago (contactamos a nuestro distribuidor Vonixx tras tu compra).
             </span>
           </label>
 
