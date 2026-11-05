@@ -1,0 +1,90 @@
+// Carvex — Modelo de datos (Venta a pedido, SIN stock)
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDIENTE // pago recibido, por confirmar con proveedor
+  CONFIRMADO // confirmado con distribuidor
+  PREPARANDO // en preparación / en camino a Carvex
+  ENVIADO // despachado al cliente (con tracking)
+  ENTREGADO
+  CANCELADO
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique // Ej: Lavado, Protección, Pulido, Interior
+  slug      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id             Int       @id @default(autoincrement())
+  name           String    // Ej: Iron Remover
+  slug           String    @unique
+  brand          String    @default("Vonixx")
+  categoryId     Int
+  category       Category  @relation(fields: [categoryId], references: [id])
+  price          Int // en pesos ARS (entero, sin decimales)
+  originalPrice  Int? // para ofertas
+  imageUrl       String
+  description    String @db.Text
+  usage          String @db.Text // modo de uso (clave en detailing)
+  size           String? // Ej: 500ml, 1L
+  featured       Boolean @default(false)
+  // Sin campo stock: la venta es a pedido.
+  orderItems     OrderItem[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([slug])
+  @@index([categoryId])
+}
+
+model User {
+  id        Int @id @default(autoincrement())
+  email     String @unique
+  password  String // hash bcrypt - solo admin por ahora
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  customerName  String
+  customerEmail String
+  customerPhone String
+  address       String
+  city          String
+  province      String
+  postalCode    String
+  total         Int // ARS
+  status        OrderStatus @default(PENDIENTE)
+  paymentId     String? // id de pago Mercado Pago
+  trackingCode  String? // código de seguimiento del envío
+  carrier       String? // transportista
+  notes         String? @db.Text // nota interna admin
+  items         OrderItem[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model OrderItem {
+  id        Int @id @default(autoincrement())
+  orderId   Int
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Int // precio snapshot al momento de la compra (ARS)
+
+  @@index([orderId])
+}

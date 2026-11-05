@@ -1,0 +1,70 @@
+import type { Product, Category } from "../types";
+
+export type ShippingOption = { province: string; price: number; days: string };
+export type CreateOrderPayload = {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  items: Array<{ slug: string; qty: number }>;
+};
+
+export const fetchProducts = async (params?: {
+  category?: string;
+  featured?: boolean;
+  q?: string;
+}): Promise<Product[]> => {
+  const qs = new URLSearchParams();
+  if (params?.category) qs.set("category", params.category);
+  if (params?.featured) qs.set("featured", "true");
+  if (params?.q) qs.set("q", params.q);
+  const res = await fetch(`/api/products?${qs.toString()}`);
+  if (!res.ok) throw new Error("No se pudieron cargar los productos");
+  return (await res.json()) as Product[];
+};
+
+export const fetchProductBySlug = async (slug: string): Promise<Product | null> => {
+  const res = await fetch(`/api/products/${slug}`);
+  if (!res.ok) return null;
+  return (await res.json()) as Product;
+};
+
+export const fetchCategories = async (): Promise<Category[]> => {
+  const res = await fetch("/api/categories");
+  if (!res.ok) throw new Error("No se pudieron cargar las categorías");
+  return (await res.json()) as Category[];
+};
+
+export const fetchShipping = async (): Promise<ShippingOption[]> => {
+  const res = await fetch("/api/shipping");
+  if (!res.ok) throw new Error("No se pudo cargar el envío");
+  return (await res.json()) as ShippingOption[];
+};
+
+export const createOrder = async (payload: CreateOrderPayload) => {
+  const res = await fetch("/api/orders", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error ?? "No se pudo crear el pedido");
+  return data as {
+    order: {
+      id: number;
+      status: string;
+      total: number;
+      customerName: string;
+      customerEmail: string;
+      province: string;
+      city: string;
+      createdAt: string;
+    };
+    subtotal: number;
+    shipping: { province: string; price: number; days: string };
+    message?: string;
+  };
+};
