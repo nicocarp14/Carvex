@@ -15,6 +15,7 @@ export default function Catalog() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<Sort>("featured");
   const [maxPrice, setMaxPrice] = useState(40000);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setCategory(searchParams.get("category") ?? "");
@@ -22,8 +23,23 @@ export default function Catalog() {
   }, [searchParams]);
 
   useEffect(() => {
-    fetchCategories().then(setCategories);
-    fetchProducts({ category: category || undefined, q: q || undefined }).then(setProducts);
+    let active = true;
+    setLoading(true);
+    Promise.all([
+      fetchCategories(),
+      fetchProducts({ category: category || undefined, q: q || undefined }),
+    ])
+      .then(([cats, prods]) => {
+        if (!active) return;
+        setCategories(cats);
+        setProducts(prods);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [category, q]);
 
   const visible = useMemo(() => {
@@ -106,7 +122,12 @@ export default function Catalog() {
 
         {/* GRID */}
         <div>
-          {visible.length === 0 ? (
+          {loading ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500">
+              Cargando productos... si es la primera visita del día, el servidor puede tardar hasta
+              40 segundos en despertar.
+            </div>
+          ) : visible.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500">
               No encontramos productos con esos filtros. Probá ampliar el rango de precio.
             </div>

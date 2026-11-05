@@ -10,7 +10,8 @@
     "dev:backend": "npm --prefix backend run dev",
     "build:frontend": "npm --prefix frontend run build",
     "build:backend": "npm --prefix backend run build",
-    "seed": "npm --prefix backend run seed"
+    "seed": "npm --prefix backend run seed",
+    "keepalive": "node scripts/keepalive.mjs"
   },
   "workspaces": [
     "frontend",

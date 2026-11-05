@@ -1,0 +1,39 @@
+name: Keepalive API
+
+# Mantiene despierto el backend de Render (plan free) para evitar
+# el cold start de 30-50 segundos en la primera visita del día.
+#
+# Render duerme un servicio tras 15 minutos sin tráfico.
+# Este workflow pinguea /api/health cada 5 minutos.
+#
+# El repo es público, así que los minutos de GitHub Actions son gratis.
+
+on:
+  schedule:
+    # Cada 5 minutos (mínimo permitido por GitHub).
+    # Puede demorarse algunos minutos en horarios de mucha carga.
+    - cron: "*/5 * * * *"
+  # Permite dispararlo a mano desde la pestaña Actions.
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Despertar y verificar /api/health
+        run: |
+          URL="https://carvex-api.onrender.com/api/health"
+          # Si Render está dormido, el primer request puede tardar ~50s.
+          # Reintentamos hasta 3 veces.
+          for i in 1 2 3; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "$URL" || true)
+            echo "Intento $i -> HTTP $CODE"
+            if [ "$CODE" = "200" ]; then
+              echo "Backend despierto ✅"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "El backend no respondió 200 después de 3 intentos ❌"
+          exit 1

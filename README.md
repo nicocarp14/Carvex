@@ -13,7 +13,7 @@ Ecommerce de productos **Vonixx** para comercios y entusiastas del detailing. Ar
 
 ```
 carvex/
-  frontend/   # Tienda pública + futuro /admin
+  frontend/   # Tienda pública + panel /admin
   backend/    # API REST + Prisma
 ```
 
@@ -40,8 +40,22 @@ npm run seed                # carga los 25 Vonixx
 
 No hay inventario. Flujo: cliente paga -> pedido `PENDIENTE` -> admin confirma con el distribuidor -> `PREPARANDO` -> `ENVIADO` (con tracking) -> `ENTREGADO`. La ficha muestra "Venta a pedido · Demora estimada: 3-7 días hábiles".
 
+## Deploy
+
+- **Frontend:** Vercel (`VITE_API_URL` apunta al backend)
+- **Backend:** Render (`FRONTEND_URL`, `DATABASE_URL`, `JWT_SECRET`)
+- **Base:** Neon Postgres
+
+Render free duerme el backend a los 15 minutos. El repo incluye un keepalive
+automático para evitarlo: ver [`KEEPALIVE.md`](./KEEPALIVE.md).
+
+## Panel admin
+
+- URL: `/admin/login`
+- Usuario: se crea con `npm run seed` (`ADMIN_EMAIL` / `ADMIN_PASSWORD`)
+- Detalle: ver [`SPRINT3.md`](./SPRINT3.md)
+
 ## Próximos sprints
 
-- **Sprint 2:** Checkout real + Mercado Pago, cálculo de envío por provincia, confirmación de pedido
-- **Sprint 3:** Panel `/admin` (login JWT, CRUD productos/categorías, gestión de pedidos)
-- **Sprint 4:** SEO, deploy (Vercel + Render/Railway + Postgres), analytics
+- **Sprint 4:** Mercado Pago real (hoy es demo)
+- **Sprint 5:** Fotos reales, SEO, analytics

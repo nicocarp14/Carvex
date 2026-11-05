@@ -1,4 +1,5 @@
 import { useAuth } from "../store/auth";
+import { fetchWithTimeout } from "./http";
 import type {
   AdminStats,
   AdminUser,
@@ -26,7 +27,7 @@ export class ApiError extends Error {
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = useAuth.getState().token;
 
-  const res = await fetch(apiUrl(path), {
+  const res = await fetchWithTimeout(apiUrl(path), {
     ...options,
     headers: {
       "Content-Type": "application/json",

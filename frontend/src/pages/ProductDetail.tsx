@@ -10,17 +10,42 @@ import ProductImage from "../components/ProductImage";
 export default function ProductDetail() {
   const { slug = "" } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const add = useCart((s) => s.add);
 
   useEffect(() => {
-    fetchProductBySlug(slug).then(setProduct);
+    let active = true;
+    setLoading(true);
+    fetchProductBySlug(slug)
+      .then((p) => {
+        if (active) setProduct(p);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
     window.scrollTo(0, 0);
+    return () => {
+      active = false;
+    };
   }, [slug]);
+
+  if (loading)
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-20 text-center text-slate-500">
+        Cargando producto... si es la primera visita del día, el servidor puede tardar hasta 40
+        segundos en despertar.
+      </div>
+    );
 
   if (!product)
     return (
-      <div className="mx-auto max-w-7xl px-4 py-20 text-center text-slate-500">Cargando producto...</div>
+      <div className="mx-auto max-w-7xl px-4 py-20 text-center text-slate-500">
+        <p>No encontramos ese producto.</p>
+        <Link to="/catalogo" className="mt-3 inline-block font-semibold text-carvex-600 hover:underline">
+          Ver catálogo →
+        </Link>
+      </div>
     );
 
   const related = product.related ?? [];
