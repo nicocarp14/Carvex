@@ -1,5 +1,10 @@
 import type { Product, Category } from "../types";
 
+// En desarrollo queda vacío y Vite usa el proxy /api → localhost:4000.
+// En Vercel definir VITE_API_URL=https://tu-api.onrender.com
+const API_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+const apiUrl = (path: string) => `${API_URL}${path}`;
+
 export type ShippingOption = { province: string; price: number; days: string };
 export type CreateOrderPayload = {
   customerName: string;
@@ -21,31 +26,31 @@ export const fetchProducts = async (params?: {
   if (params?.category) qs.set("category", params.category);
   if (params?.featured) qs.set("featured", "true");
   if (params?.q) qs.set("q", params.q);
-  const res = await fetch(`/api/products?${qs.toString()}`);
+  const res = await fetch(apiUrl(`/api/products?${qs.toString()}`));
   if (!res.ok) throw new Error("No se pudieron cargar los productos");
   return (await res.json()) as Product[];
 };
 
 export const fetchProductBySlug = async (slug: string): Promise<Product | null> => {
-  const res = await fetch(`/api/products/${slug}`);
+  const res = await fetch(apiUrl(`/api/products/${slug}`));
   if (!res.ok) return null;
   return (await res.json()) as Product;
 };
 
 export const fetchCategories = async (): Promise<Category[]> => {
-  const res = await fetch("/api/categories");
+  const res = await fetch(apiUrl("/api/categories"));
   if (!res.ok) throw new Error("No se pudieron cargar las categorías");
   return (await res.json()) as Category[];
 };
 
 export const fetchShipping = async (): Promise<ShippingOption[]> => {
-  const res = await fetch("/api/shipping");
+  const res = await fetch(apiUrl("/api/shipping"));
   if (!res.ok) throw new Error("No se pudo cargar el envío");
   return (await res.json()) as ShippingOption[];
 };
 
 export const createOrder = async (payload: CreateOrderPayload) => {
-  const res = await fetch("/api/orders", {
+  const res = await fetch(apiUrl("/api/orders"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

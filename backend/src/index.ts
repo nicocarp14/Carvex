@@ -1,15 +1,32 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import { SHIPPING } from "./shipping.js";
 import { createOrder, validateOrder, type CreateOrderInput } from "./orders.js";
 
+// En desarrollo, Neon CLI escribe las URLs en la raíz del monorepo.
+// backend/.env tiene prioridad si existe (por ejemplo, en producción).
+dotenv.config({ path: "../.env.local" });
+dotenv.config();
+
 const app = express();
 const prisma = new PrismaClient();
 const PORT = Number(process.env.PORT ?? 4000);
+const allowedOrigins = (process.env.FRONTEND_URL ?? "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors({ origin: process.env.FRONTEND_URL ?? "http://localhost:5173" }));
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Sin Origin: health checks, curl y llamadas servidor-a-servidor.
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Origen no permitido por CORS"));
+    },
+  }),
+);
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => res.json({ ok: true, service: "carvex-api" }));

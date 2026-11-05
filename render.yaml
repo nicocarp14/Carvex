@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: carvex-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm --prefix backend run prisma:generate && npm run build:backend
+    startCommand: npm --prefix backend run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
