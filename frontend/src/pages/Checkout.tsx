@@ -31,9 +31,9 @@ export default function Checkout() {
       .then(setShipping)
       .catch(() =>
         setShipping([
-          { province: "CABA", price: 3500, days: "1-2 dÃ­as" },
-          { province: "Buenos Aires", price: 4500, days: "2-4 dÃ­as" },
-          { province: "Otra provincia", price: 6500, days: "3-7 dÃ­as" },
+          { province: "CABA", price: 3500, days: "1-2 días" },
+          { province: "Buenos Aires", price: 4500, days: "2-4 días" },
+          { province: "Otra provincia", price: 6500, days: "3-7 días" },
         ]),
       );
   }, []);
@@ -48,11 +48,11 @@ export default function Checkout() {
     e.preventDefault();
     setError("");
     if (!acceptOnOrder) {
-      setError("TenÃ©s que aceptar la demora estimada a pedido para continuar.");
+      setError("Tenés que aceptar la demora estimada a pedido para continuar.");
       return;
     }
     if (items.length === 0) {
-      setError("Tu carrito estÃ¡ vacÃ­o.");
+      setError("Tu carrito está vacío.");
       return;
     }
     setSending(true);
@@ -74,10 +74,10 @@ export default function Checkout() {
   if (success) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl">âœ“</div>
-        <h1 className="mt-6 font-display text-3xl font-bold">Â¡Pedido #{success} creado!</h1>
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl">✓</div>
+        <h1 className="mt-6 font-display text-3xl font-bold">¡Pedido #{success} creado!</h1>
         <p className="mt-3 text-slate-600">
-          Pago simulado con Ã©xito. Estamos en modo demo â€” en producciÃ³n acÃ¡ irÃ­a Mercado Pago Checkout Pro.
+          Pago simulado con éxito. Estamos en modo demo — en producción acá iría Mercado Pago Checkout Pro.
           Te contactaremos para confirmar con nuestro distribuidor Vonixx.
         </p>
         <div className="mt-6 flex justify-center gap-3">
@@ -95,8 +95,8 @@ export default function Checkout() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <h1 className="font-display text-2xl font-bold">Checkout vacÃ­o</h1>
-        <p className="mt-2 text-slate-600">AgregÃ¡ productos desde el catÃ¡logo.</p>
+        <h1 className="font-display text-2xl font-bold">Checkout vacío</h1>
+        <p className="mt-2 text-slate-600">Agregá productos desde el catálogo.</p>
       </div>
     );
   }
@@ -107,7 +107,7 @@ export default function Checkout() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <h1 className="font-display text-3xl font-bold">Checkout</h1>
-      <p className="mt-1 text-slate-600">Venta a pedido Â· PagÃ¡s con Mercado Pago (demo) Â· EnvÃ­o a todo el paÃ­s</p>
+      <p className="mt-1 text-slate-600">Venta a pedido · Pagás con Mercado Pago (demo) · Envío a todo el país</p>
 
       <form onSubmit={onSubmit} className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
         <div className="space-y-6">
@@ -121,7 +121,7 @@ export default function Checkout() {
                   value={form.customerName}
                   onChange={(e) => setForm({ ...form, customerName: e.target.value })}
                   className={inputCls}
-                  placeholder="Juan PÃ©rez"
+                  placeholder="Juan Pérez"
                 />
               </div>
               <div>
@@ -136,7 +136,7 @@ export default function Checkout() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">TelÃ©fono / WhatsApp</label>
+                <label className="text-sm font-medium">Teléfono / WhatsApp</label>
                 <input
                   required
                   value={form.customerPhone}
@@ -146,7 +146,7 @@ export default function Checkout() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-sm font-medium">DirecciÃ³n</label>
+                <label className="text-sm font-medium">Dirección</label>
                 <input
                   required
                   value={form.address}
@@ -166,7 +166,7 @@ export default function Checkout() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">CÃ³digo postal</label>
+                <label className="text-sm font-medium">Código postal</label>
                 <input
                   required
                   value={form.postalCode}
@@ -176,17 +176,17 @@ export default function Checkout() {
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="text-sm font-medium">Provincia (para calcular envÃ­o)</label>
+                <label className="text-sm font-medium">Provincia (para calcular envío)</label>
                 <select
                   required
                   value={province}
                   onChange={(e) => setProvince(e.target.value)}
                   className={inputCls}
                 >
-                  <option value="">SeleccionÃ¡ provincia</option>
+                  <option value="">Seleccioná provincia</option>
                   {shipping.map((s) => (
                     <option key={s.province} value={s.province}>
-                      {s.province} â€” {formatPrice(s.price)} Â· {s.days}
+                      {s.province} — {formatPrice(s.price)} · {s.days}
                     </option>
                   ))}
                 </select>
@@ -202,8 +202,8 @@ export default function Checkout() {
               className="mt-0.5 h-4 w-4 accent-carvex-900"
             />
             <span>
-              Acepto que es <strong>venta a pedido</strong> con demora estimada de 3-7 dÃ­as hÃ¡biles desde la
-              confirmaciÃ³n del pago (compramos a nuestro distribuidor Vonixx tras tu compra).
+              Acepto que es <strong>venta a pedido</strong> con demora estimada de 3-7 días hábiles desde la
+              confirmación del pago (compramos a nuestro distribuidor Vonixx tras tu compra).
             </span>
           </label>
 
@@ -216,10 +216,10 @@ export default function Checkout() {
             disabled={sending}
             className="w-full rounded-lg bg-carvex-900 py-4 font-semibold text-white disabled:opacity-60 hover:bg-carvex-800"
           >
-            {sending ? "Creando pedido..." : `Pagar con Mercado Pago Â· ${formatPrice(total)}`}
+            {sending ? "Creando pedido..." : `Pagar con Mercado Pago · ${formatPrice(total)}`}
           </button>
           <p className="text-center text-xs text-slate-500">
-            Demo: el pago es simulado. En producciÃ³n se redirige a Mercado Pago Checkout Pro.
+            Demo: el pago es simulado. En producción se redirige a Mercado Pago Checkout Pro.
           </p>
         </div>
 
@@ -233,7 +233,7 @@ export default function Checkout() {
                 </div>
                 <div className="flex-1 text-sm">
                   <p className="font-medium leading-tight">{product.name}</p>
-                  <p className="text-slate-500">{qty} Ã— {formatPrice(product.price)}</p>
+                  <p className="text-slate-500">{qty} × {formatPrice(product.price)}</p>
                 </div>
                 <p className="text-sm font-semibold">{formatPrice(product.price * qty)}</p>
               </div>
@@ -241,7 +241,7 @@ export default function Checkout() {
           </div>
           <div className="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm">
             <div className="flex justify-between"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-            <div className="flex justify-between"><span>EnvÃ­o</span><span>{ship.price ? formatPrice(ship.price) : "â€”"}</span></div>
+            <div className="flex justify-between"><span>Envío</span><span>{ship.price ? formatPrice(ship.price) : "—"}</span></div>
             <div className="flex justify-between font-bold"><span>Total</span><span>{formatPrice(total)}</span></div>
           </div>
         </aside>
