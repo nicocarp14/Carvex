@@ -1,14 +1,12 @@
 import type { PrismaClient } from "@prisma/client";
-import { shippingFor } from "./shipping.js";
+
+// Pedidos por WhatsApp: solo datos de contacto, sin dirección ni envío.
+// El pago y el envío se coordinan con el cliente en el chat.
 
 export type CreateOrderInput = {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
   items: Array<{ slug: string; qty: number }>;
 };
 
@@ -17,10 +15,6 @@ export function validateOrder(input: Partial<CreateOrderInput>): string[] {
   if (!input.customerName?.trim()) errors.push("customerName es requerido");
   if (!input.customerEmail?.includes("@")) errors.push("customerEmail inválido");
   if (!input.customerPhone?.trim()) errors.push("customerPhone es requerido");
-  if (!input.address?.trim()) errors.push("address es requerido");
-  if (!input.city?.trim()) errors.push("city es requerido");
-  if (!input.province?.trim()) errors.push("province es requerido");
-  if (!input.postalCode?.trim()) errors.push("postalCode es requerido");
   if (!Array.isArray(input.items) || input.items.length === 0)
     errors.push("Al menos un producto es requerido");
   if (input.items?.some((i) => !i.slug || !(i.qty >= 1)))
@@ -43,23 +37,21 @@ export async function createOrder(prisma: PrismaClient, input: CreateOrderInput)
   const bySlug = new Map<string, { id: number; slug: string; price: number }>(
     products.map((p: { id: number; slug: string; price: number }) => [p.slug, p]),
   );
-  const shipping = shippingFor(input.province);
+
+  // Sin envío calculado: el total es el subtotal.
+  // Pago y envío se coordinan por WhatsApp.
   const subtotal = input.items.reduce((acc: number, it: { slug: string; qty: number }) => {
     const p = bySlug.get(it.slug);
     if (!p) throw new Error(`Producto no encontrado: ${it.slug}`);
     return acc + p.price * it.qty;
   }, 0);
-  const total = subtotal + shipping.price;
+  const total = subtotal;
 
   const order = await prisma.order.create({
     data: {
       customerName: input.customerName,
       customerEmail: input.customerEmail,
       customerPhone: input.customerPhone,
-      address: input.address,
-      city: input.city,
-      province: input.province,
-      postalCode: input.postalCode,
       total,
       status: "PENDIENTE",
       items: {
@@ -72,5 +64,5 @@ export async function createOrder(prisma: PrismaClient, input: CreateOrderInput)
     include: { items: { include: { product: true } } },
   });
 
-  return { order, subtotal, shipping };
+  return { order, subtotal };
 }

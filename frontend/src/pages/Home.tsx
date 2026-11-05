@@ -79,8 +79,8 @@ export default function Home() {
         <h2 className="font-display text-2xl font-bold">Venta a pedido, simple</h2>
         <div className="mt-6 grid gap-6 md:grid-cols-3">
           {[
-            { n: "1", t: "Comprás y pagás", d: "Elegís tus productos Vonixx y pagás con Mercado Pago. Recibís la confirmación al instante." },
-            { n: "2", t: "Confirmamos stock", d: "Hacemos el pedido a nuestro distribuidor oficial. Te avisamos por WhatsApp/email la fecha estimada." },
+            { n: "1", t: "Elegís y pedís por WhatsApp", d: "Elegís tus productos Vonixx, completás nombre, email y teléfono, y el pedido te llega por WhatsApp." },
+            { n: "2", t: "Confirmamos stock", d: "Hacemos el pedido a nuestro distribuidor oficial. Te avisamos por WhatsApp la fecha estimada y coordinamos el pago." },
             { n: "3", t: "Despachamos", d: "En 3-7 días hábiles sale tu paquete con código de seguimiento a todo el país." },
           ].map((s) => (
             <div key={s.n} className="rounded-2xl border border-slate-200 p-6">

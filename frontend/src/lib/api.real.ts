@@ -6,15 +6,10 @@ import { fetchWithTimeout } from "./http";
 const API_URL = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 const apiUrl = (path: string) => `${API_URL}${path}`;
 
-export type ShippingOption = { province: string; price: number; days: string };
 export type CreateOrderPayload = {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
   items: Array<{ slug: string; qty: number }>;
 };
 
@@ -44,12 +39,6 @@ export const fetchCategories = async (): Promise<Category[]> => {
   return (await res.json()) as Category[];
 };
 
-export const fetchShipping = async (): Promise<ShippingOption[]> => {
-  const res = await fetchWithTimeout(apiUrl("/api/shipping"));
-  if (!res.ok) throw new Error("No se pudo cargar el envío");
-  return (await res.json()) as ShippingOption[];
-};
-
 export const createOrder = async (payload: CreateOrderPayload) => {
   const res = await fetchWithTimeout(apiUrl("/api/orders"), {
     method: "POST",
@@ -65,12 +54,10 @@ export const createOrder = async (payload: CreateOrderPayload) => {
       total: number;
       customerName: string;
       customerEmail: string;
-      province: string;
-      city: string;
+      customerPhone: string;
       createdAt: string;
     };
     subtotal: number;
-    shipping: { province: string; price: number; days: string };
     message?: string;
   };
 };

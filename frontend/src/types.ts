@@ -50,10 +50,6 @@ export interface Order {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
   total: number;
   status: OrderStatus;
   paymentId: string | null;

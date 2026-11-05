@@ -7,7 +7,7 @@ export default function Footer() {
         <div>
           <p className="font-display text-lg font-bold text-white">Carvex</p>
           <p className="mt-2 text-sm">
-            Productos Vonixx para detailing. Venta a pedido a todo el país, pagá con Mercado Pago.
+            Productos Vonixx para detailing. Venta a pedido a todo el país. El pago y el envío se coordinan por WhatsApp.
           </p>
         </div>
         <div>
@@ -23,13 +23,13 @@ export default function Footer() {
           <ul className="mt-3 space-y-2 text-sm">
             <li>Envíos a toda Argentina</li>
             <li>Demora estimada: 3-7 días hábiles</li>
-            <li>Pago con Mercado Pago</li>
+            <li>Pago y envío a coordinar por WhatsApp</li>
           </ul>
         </div>
         <div>
           <p className="font-semibold text-white">Contacto</p>
           <ul className="mt-3 space-y-2 text-sm">
-            <li>WhatsApp: (próximamente)</li>
+            <li>Atención por WhatsApp al hacer tu pedido</li>
             <li>hola@carvex.com.ar</li>
           </ul>
         </div>

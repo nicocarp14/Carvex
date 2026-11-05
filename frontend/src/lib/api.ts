@@ -51,5 +51,5 @@ export const fetchCategories = async (): Promise<Category[]> => {
   }
 };
 
-export { fetchShipping, createOrder } from "./api.real";
-export type { ShippingOption, CreateOrderPayload } from "./api.real";
+export { createOrder } from "./api.real";
+export type { CreateOrderPayload } from "./api.real";

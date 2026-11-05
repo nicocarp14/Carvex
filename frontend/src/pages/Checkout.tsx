@@ -1,8 +1,9 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../store/cart";
 import { formatPrice } from "../lib/format";
-import { fetchShipping, createOrder, type ShippingOption } from "../lib/api";
+import { createOrder } from "../lib/api";
+import { buildWhatsAppMessage, buildWhatsAppUrl } from "../lib/whatsapp";
 import ProductImage from "../components/ProductImage";
 
 export default function Checkout() {
@@ -11,38 +12,15 @@ export default function Checkout() {
   const clear = useCart((s) => s.clear);
   const subtotal = items.reduce((a, i) => a + i.product.price * i.qty, 0);
 
-  const [shipping, setShipping] = useState<ShippingOption[]>([]);
-  const [province, setProvince] = useState("");
   const [form, setForm] = useState({
     customerName: "",
     customerEmail: "",
     customerPhone: "",
-    address: "",
-    city: "",
-    postalCode: "",
   });
-  const [acceptOnOrder, setacceptOnOrder] = useState(false);
+  const [acceptOnOrder, setAcceptOnOrder] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetchShipping()
-      .then(setShipping)
-      .catch(() =>
-        setShipping([
-          { province: "CABA", price: 3500, days: "1-2 días" },
-          { province: "Buenos Aires", price: 4500, days: "2-4 días" },
-          { province: "Otra provincia", price: 6500, days: "3-7 días" },
-        ]),
-      );
-  }, []);
-
-  const ship = useMemo(
-    () => shipping.find((s) => s.province === province) ?? { price: 0, days: "" },
-    [shipping, province],
-  );
-  const total = subtotal + ship.price;
+  const [success, setSuccess] = useState<{ orderId: number; whatsappUrl: string } | null>(null);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,17 +33,37 @@ export default function Checkout() {
       setError("Tu carrito está vacío.");
       return;
     }
+
+    const whatsappWindow = window.open("about:blank", "_blank");
     setSending(true);
     try {
+      // 1. El pedido queda registrado en la base (Neon) como PENDIENTE.
       const data = await createOrder({
         ...form,
-        province,
         items: items.map((i) => ({ slug: i.product.slug, qty: i.qty })),
       });
-      setSuccess(data.order.id);
+
+      const whatsappUrl = buildWhatsAppUrl(
+        buildWhatsAppMessage({
+          items,
+          subtotal: data.subtotal,
+          customerName: form.customerName,
+          customerEmail: form.customerEmail,
+          customerPhone: form.customerPhone,
+          orderId: data.order.id,
+        }),
+      );
+
+      if (whatsappWindow && !whatsappWindow.closed) {
+        whatsappWindow.opener = null;
+        whatsappWindow.location.href = whatsappUrl;
+      }
+
+      setSuccess({ orderId: data.order.id, whatsappUrl });
       clear();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al crear el pedido");
+      whatsappWindow?.close();
+      setError(err instanceof Error ? err.message : "No se pudo crear el pedido");
     } finally {
       setSending(false);
     }
@@ -74,12 +72,24 @@ export default function Checkout() {
   if (success) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl">✓</div>
-        <h1 className="mt-6 font-display text-3xl font-bold">¡Pedido #{success} creado!</h1>
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-3xl">
+          ✓
+        </div>
+        <h1 className="mt-6 font-display text-3xl font-bold">
+          ¡Pedido #{success.orderId} registrado!
+        </h1>
         <p className="mt-3 text-slate-600">
-          Pago simulado con éxito. Estamos en modo demo — en producción acá iría Mercado Pago Checkout Pro.
-          Te contactaremos para confirmar con nuestro distribuidor Vonixx.
+          El pedido quedó registrado. En WhatsApp vas a encontrar el detalle para enviárnoslo y
+          confirmar la compra. Coordinamos el pago y el envío por ese chat.
         </p>
+        <a
+          href={success.whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 inline-block rounded-lg bg-green-600 px-6 py-3 font-semibold text-white hover:bg-green-700"
+        >
+          Abrir pedido en WhatsApp
+        </a>
         <div className="mt-6 flex justify-center gap-3">
           <Link to="/catalogo" className="rounded-lg bg-carvex-900 px-6 py-3 font-semibold text-white">
             Seguir comprando
@@ -107,12 +117,17 @@ export default function Checkout() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <h1 className="font-display text-3xl font-bold">Checkout</h1>
-      <p className="mt-1 text-slate-600">Venta a pedido · Pagás con Mercado Pago (demo) · Envío a todo el país</p>
+      <p className="mt-1 text-slate-600">
+        Venta a pedido · Te atendemos por WhatsApp · Envío a todo el país
+      </p>
 
       <form onSubmit={onSubmit} className="mt-8 grid gap-8 lg:grid-cols-[1fr_380px]">
         <div className="space-y-6">
           <section className="rounded-2xl border border-slate-200 p-6">
-            <h2 className="font-display font-semibold">Datos del comprador</h2>
+            <h2 className="font-display font-semibold">Tus datos</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Solo necesitamos estos datos. La dirección y el envío los coordinamos por WhatsApp.
+            </p>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="text-sm font-medium">Nombre y apellido</label>
@@ -145,52 +160,6 @@ export default function Checkout() {
                   placeholder="11 1234-5678"
                 />
               </div>
-              <div className="sm:col-span-2">
-                <label className="text-sm font-medium">Dirección</label>
-                <input
-                  required
-                  value={form.address}
-                  onChange={(e) => setForm({ ...form, address: e.target.value })}
-                  className={inputCls}
-                  placeholder="Calle 123 456, Piso 2 Depto B"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Ciudad</label>
-                <input
-                  required
-                  value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value })}
-                  className={inputCls}
-                  placeholder="La Plata"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Código postal</label>
-                <input
-                  required
-                  value={form.postalCode}
-                  onChange={(e) => setForm({ ...form, postalCode: e.target.value })}
-                  className={inputCls}
-                  placeholder="1900"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="text-sm font-medium">Provincia (para calcular envío)</label>
-                <select
-                  required
-                  value={province}
-                  onChange={(e) => setProvince(e.target.value)}
-                  className={inputCls}
-                >
-                  <option value="">Seleccioná provincia</option>
-                  {shipping.map((s) => (
-                    <option key={s.province} value={s.province}>
-                      {s.province} — {formatPrice(s.price)} · {s.days}
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </section>
 
@@ -198,28 +167,35 @@ export default function Checkout() {
             <input
               type="checkbox"
               checked={acceptOnOrder}
-              onChange={(e) => setacceptOnOrder(e.target.checked)}
+              onChange={(e) => setAcceptOnOrder(e.target.checked)}
               className="mt-0.5 h-4 w-4 accent-carvex-900"
             />
             <span>
-              Acepto que es <strong>venta a pedido</strong> con demora estimada de 3-7 días hábiles desde la
-              confirmación del pago (contactamos a nuestro distribuidor Vonixx tras tu compra).
+              Acepto que es <strong>venta a pedido</strong> con demora estimada de 3-7 días hábiles.
+              Confirmamos stock con nuestro distribuidor Vonixx y coordinamos el pago por WhatsApp,
+              sin pagar de inmediato.
             </span>
           </label>
 
           {error && (
-            <div className="rounded-xl bg-red-50 p-4 text-sm text-red-700 border border-red-200">{error}</div>
+            <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+              {error}
+            </div>
           )}
 
           <button
             type="submit"
             disabled={sending}
-            className="w-full rounded-lg bg-carvex-900 py-4 font-semibold text-white disabled:opacity-60 hover:bg-carvex-800"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 py-4 font-semibold text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {sending ? "Creando pedido..." : `Pagar con Mercado Pago · ${formatPrice(total)}`}
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+            </svg>
+            {sending ? "Creando pedido..." : `Pedir por WhatsApp · ${formatPrice(subtotal)}`}
           </button>
           <p className="text-center text-xs text-slate-500">
-            Demo: el pago es simulado. En producción se redirige a Mercado Pago Checkout Pro.
+            Al tocar el botón se crea el pedido y se abre WhatsApp con el detalle para que lo envíes.
+            El pago y el envío se coordinan en ese chat.
           </p>
         </div>
 
@@ -233,20 +209,30 @@ export default function Checkout() {
                 </div>
                 <div className="flex-1 text-sm">
                   <p className="font-medium leading-tight">{product.name}</p>
-                  <p className="text-slate-500">{qty} × {formatPrice(product.price)}</p>
+                  <p className="text-slate-500">
+                    {qty} × {formatPrice(product.price)}
+                  </p>
                 </div>
                 <p className="text-sm font-semibold">{formatPrice(product.price * qty)}</p>
               </div>
             ))}
           </div>
           <div className="mt-4 space-y-2 border-t border-slate-200 pt-4 text-sm">
-            <div className="flex justify-between"><span>Subtotal</span><span>{formatPrice(subtotal)}</span></div>
-            <div className="flex justify-between"><span>Envío</span><span>{ship.price ? formatPrice(ship.price) : "—"}</span></div>
-            <div className="flex justify-between font-bold"><span>Total</span><span>{formatPrice(total)}</span></div>
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-slate-500">
+              <span>Envío</span>
+              <span>A coordinar</span>
+            </div>
+            <div className="flex justify-between font-bold">
+              <span>Total</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
           </div>
         </aside>
       </form>
     </div>
   );
 }
-

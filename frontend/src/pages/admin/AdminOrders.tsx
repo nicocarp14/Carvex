@@ -141,6 +141,7 @@ export default function AdminOrders() {
                   <td className="px-4 py-3">
                     <p className="font-medium text-slate-800">{order.customerName}</p>
                     <p className="text-xs text-slate-500">{order.customerEmail}</p>
+                    <p className="text-xs text-slate-500">{order.customerPhone}</p>
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-slate-600">
                     {formatDate(order.createdAt)}

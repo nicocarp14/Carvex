@@ -116,8 +116,8 @@ export default function ProductDetail() {
             <div className="rounded-2xl border border-slate-200 p-5 text-sm text-slate-600">
               <p className="font-semibold text-carvex-900">¿Cómo se trabaja a pedido?</p>
               <p className="mt-1">
-                Pagás con Mercado Pago → confirmamos el pedido con nuestro distribuidor Vonixx → despachamos en
-                3-7 días hábiles con seguimiento a todo el país.
+                Pedís por WhatsApp → confirmamos stock con nuestro distribuidor Vonixx y coordinamos el pago y el envío
+                → despachamos en 3-7 días hábiles con seguimiento a todo el país.
               </p>
             </div>
           </div>

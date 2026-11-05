@@ -69,7 +69,7 @@ export default function Cart() {
             </div>
             <div className="flex justify-between">
               <span className="text-slate-300">Envío</span>
-              <span>A calcular</span>
+              <span>A coordinar por WhatsApp</span>
             </div>
             <div className="border-t border-white/10 pt-3 text-base font-bold">
               <div className="flex justify-between">
@@ -79,13 +79,13 @@ export default function Cart() {
             </div>
           </div>
           <p className="mt-4 rounded-lg bg-white/10 p-3 text-xs leading-relaxed text-slate-200">
-            Venta a pedido · Demora estimada 3-7 días hábiles. El envío se calcula por provincia en el checkout.
+            Venta a pedido · Demora estimada 3-7 días hábiles. El pago y el envío se coordinan por WhatsApp.
           </p>
           <Link
             to="/checkout"
             className="mt-4 block w-full rounded-lg bg-white py-3 text-center font-semibold text-carvex-900 hover:bg-carvex-50"
           >
-            Ir a pagar
+            Ir al checkout
           </Link>
           <Link to="/catalogo" className="mt-3 block text-center text-sm text-carvex-200 hover:text-white">
             Seguir comprando

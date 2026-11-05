@@ -82,7 +82,6 @@ export default function AdminOrderDetail() {
   if (!order) return null;
 
   const subtotal = order.items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = order.total - subtotal;
 
   return (
     <div>
@@ -144,9 +143,9 @@ export default function AdminOrderDetail() {
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-slate-500">
                 <span>Envío</span>
-                <span>{shipping > 0 ? formatPrice(shipping) : "—"}</span>
+                <span>A coordinar por WhatsApp</span>
               </div>
               <div className="flex justify-between text-base font-bold text-carvex-900">
                 <span>Total</span>
@@ -252,18 +251,22 @@ export default function AdminOrderDetail() {
           </section>
 
           <section className="rounded-xl border border-slate-200 bg-white p-4">
-            <h2 className="font-display text-base font-bold text-carvex-900">Envío</h2>
+            <h2 className="font-display text-base font-bold text-carvex-900">Coordinación</h2>
             <dl className="mt-3 space-y-2 text-sm">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Dirección</dt>
-                <dd className="text-slate-800">{order.address}</dd>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">Canal</dt>
+                <dd className="text-slate-800">WhatsApp</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Ciudad</dt>
-                <dd className="text-slate-800">
-                  {order.city}, {order.province} ({order.postalCode})
-                </dd>
+                <dt className="text-xs uppercase tracking-wide text-slate-500">Estado del pago</dt>
+                <dd className="text-slate-800">A coordinar con el cliente</dd>
               </div>
+              {order.paymentId && (
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-slate-500">Referencia</dt>
+                  <dd className="break-all text-slate-800">{order.paymentId}</dd>
+                </div>
+              )}
               {order.carrier && (
                 <div>
                   <dt className="text-xs uppercase tracking-wide text-slate-500">Transportista</dt>
@@ -276,20 +279,6 @@ export default function AdminOrderDetail() {
                   <dd className="break-all font-mono text-slate-800">{order.trackingCode}</dd>
                 </div>
               )}
-            </dl>
-          </section>
-
-          <section className="rounded-xl border border-slate-200 bg-white p-4">
-            <h2 className="font-display text-base font-bold text-carvex-900">Pago</h2>
-            <dl className="mt-3 space-y-2 text-sm">
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Medio</dt>
-                <dd className="text-slate-800">Mercado Pago (demo)</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">ID de pago</dt>
-                <dd className="break-all text-slate-800">{order.paymentId ?? "—"}</dd>
-              </div>
             </dl>
           </section>
         </div>

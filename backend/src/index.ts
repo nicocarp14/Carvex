@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
-import { SHIPPING } from "./shipping.js";
 import { createOrder, validateOrder, type CreateOrderInput } from "./orders.js";
 import { adminRouter } from "./admin.js";
 
@@ -32,9 +31,7 @@ app.use(express.json());
 
 app.get("/api/health", (_req, res) => res.json({ ok: true, service: "carvex-api" }));
 
-app.get("/api/shipping", (_req, res) => {
-  res.json(SHIPPING.map((s) => ({ province: s.province, price: s.price, days: s.days })));
-});
+// El envío se coordina por WhatsApp, ya no hay cálculo por provincia.
 
 app.get("/api/categories", async (_req, res, next) => {
   try {
@@ -89,21 +86,19 @@ app.get("/api/products/:slug", async (req, res, next) => {
   }
 });
 
-// Pedidos — Sprint 2 (mock pago, sin Mercado Pago real)
+// Pedidos — creados desde el checkout y confirmados por WhatsApp
 app.post("/api/orders", async (req, res, next) => {
   try {
     const input = req.body as CreateOrderInput;
     const errors = validateOrder(input);
     if (errors.length) return res.status(400).json({ error: errors.join(", ") });
 
-    const { order, subtotal, shipping } = await createOrder(prisma, input);
+    const { order, subtotal } = await createOrder(prisma, input);
 
-    // Mock: pago simulado aprobado → estado PENDIENTE (confirmar con proveedor)
     return res.status(201).json({
       order,
       subtotal,
-      shipping,
-      message: "Pedido creado en modo demo. Pago simulado.",
+      message: "Pedido registrado. Coordinamos pago y envío por WhatsApp.",
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Error al crear pedido";
