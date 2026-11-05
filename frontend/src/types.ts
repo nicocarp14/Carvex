@@ -16,13 +16,22 @@ export interface Product {
   description: string;
   usage: string;
   size: string | null;
+  variants: ProductVariant[];
   featured: boolean;
   category: Category;
   related?: Product[];
 }
 
+export interface ProductVariant {
+  id: string;
+  size: string;
+  price: number;
+  originalPrice: number | null;
+}
+
 export interface CartItem {
   product: Product;
+  variant: ProductVariant;
   qty: number;
 }
 
@@ -42,6 +51,7 @@ export interface OrderItem {
   productId: number;
   quantity: number;
   price: number;
+  variantSize: string | null;
   product: Product;
 }
 

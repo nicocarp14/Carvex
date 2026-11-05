@@ -10,7 +10,7 @@ export default function Checkout() {
   const navigate = useNavigate();
   const items = useCart((s) => s.items);
   const clear = useCart((s) => s.clear);
-  const subtotal = items.reduce((a, i) => a + i.product.price * i.qty, 0);
+  const subtotal = items.reduce((a, i) => a + i.variant.price * i.qty, 0);
 
   const [form, setForm] = useState({
     customerName: "",
@@ -40,7 +40,11 @@ export default function Checkout() {
       // 1. El pedido queda registrado en la base (Neon) como PENDIENTE.
       const data = await createOrder({
         ...form,
-        items: items.map((i) => ({ slug: i.product.slug, qty: i.qty })),
+        items: items.map((item) => ({
+          slug: item.product.slug,
+          variantId: item.variant.id,
+          qty: item.qty,
+        })),
       });
 
       const whatsappUrl = buildWhatsAppUrl(
@@ -202,18 +206,19 @@ export default function Checkout() {
         <aside className="h-fit rounded-2xl border border-slate-200 p-6 lg:sticky lg:top-20">
           <h2 className="font-display font-semibold">Tu pedido</h2>
           <div className="mt-4 space-y-3">
-            {items.map(({ product, qty }) => (
-              <div key={product.slug} className="flex items-center gap-3">
+            {items.map(({ product, variant, qty }) => (
+              <div key={`${product.slug}:${variant.id}`} className="flex items-center gap-3">
                 <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg">
                   <ProductImage product={product} className="h-full w-full" />
                 </div>
                 <div className="flex-1 text-sm">
                   <p className="font-medium leading-tight">{product.name}</p>
                   <p className="text-slate-500">
-                    {qty} × {formatPrice(product.price)}
+                    {variant.size ? `${variant.size} · ` : ""}
+                    {qty} × {formatPrice(variant.price)}
                   </p>
                 </div>
-                <p className="text-sm font-semibold">{formatPrice(product.price * qty)}</p>
+                <p className="text-sm font-semibold">{formatPrice(variant.price * qty)}</p>
               </div>
             ))}
           </div>

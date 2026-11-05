@@ -19,9 +19,9 @@ export const buildWhatsAppMessage = (opts: {
   lines.push(`Hola Carvex, quiero hacer un pedido (Nº ${orderId}):`);
   lines.push("");
   lines.push("Productos:");
-  for (const { product, qty } of items) {
-    const size = product.size ? ` (${product.size})` : "";
-    lines.push(`• ${qty}x ${product.name}${size} - $${(product.price * qty).toLocaleString("es-AR")}`);
+  for (const { product, variant, qty } of items) {
+    const size = variant.size ? ` (${variant.size})` : "";
+    lines.push(`• ${qty}x ${product.name}${size} - $${(variant.price * qty).toLocaleString("es-AR")}`);
   }
   lines.push("");
   lines.push(`Subtotal: $${subtotal.toLocaleString("es-AR")}`);

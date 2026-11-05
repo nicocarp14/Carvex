@@ -125,7 +125,10 @@ export default function AdminOrderDetail() {
                       <td className="px-4 py-3">
                         <p className="font-medium text-slate-800">{item.product.name}</p>
                         <p className="text-xs text-slate-500">
-                          {item.product.brand} {item.product.size ? `· ${item.product.size}` : ""}
+                          {item.product.brand}{" "}
+                          {(item.variantSize ?? item.product.size)
+                            ? `· ${item.variantSize ?? item.product.size}`
+                            : ""}
                         </p>
                       </td>
                       <td className="px-4 py-3 text-slate-600">{item.quantity}</td>

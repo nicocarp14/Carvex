@@ -10,7 +10,7 @@ export type CreateOrderPayload = {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  items: Array<{ slug: string; qty: number }>;
+  items: Array<{ slug: string; variantId: string; qty: number }>;
 };
 
 export const fetchProducts = async (params?: {

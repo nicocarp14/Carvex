@@ -6,6 +6,9 @@ import ProductImage from "./ProductImage";
 
 export default function ProductCard({ product }: { product: Product }) {
   const add = useCart((s) => s.add);
+  const startingVariant = product.variants.reduce((lowest, variant) =>
+    variant.price < lowest.price ? variant : lowest,
+  );
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
@@ -23,7 +26,9 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className="flex flex-1 flex-col p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-carvex-600">
-          {product.brand} · {product.size ?? ""}
+          {product.brand} · {product.variants.length > 1
+            ? `${product.variants.length} presentaciones`
+            : startingVariant.size}
         </p>
         <Link to={`/producto/${product.slug}`}>
           <h3 className="mt-1 font-display font-semibold leading-snug hover:text-carvex-600">
@@ -33,19 +38,33 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="mt-1 line-clamp-2 text-sm text-slate-600">{product.description}</p>
 
         <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-carvex-900">{formatPrice(product.price)}</span>
-          {product.originalPrice && (
-            <span className="text-sm text-slate-400 line-through">{formatPrice(product.originalPrice)}</span>
+          <span className="text-lg font-bold text-carvex-900">
+            {product.variants.length > 1 ? "Desde " : ""}
+            {formatPrice(startingVariant.price)}
+          </span>
+          {startingVariant.originalPrice && (
+            <span className="text-sm text-slate-400 line-through">
+              {formatPrice(startingVariant.originalPrice)}
+            </span>
           )}
         </div>
         <p className="text-xs text-slate-500">Venta a pedido · 3-7 días hábiles</p>
 
-        <button
-          onClick={() => add(product)}
-          className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-sm font-semibold text-white transition hover:bg-carvex-800"
-        >
-          Agregar al carrito
-        </button>
+        {product.variants.length > 1 ? (
+          <Link
+            to={`/producto/${product.slug}`}
+            className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-carvex-800"
+          >
+            Elegir presentación
+          </Link>
+        ) : (
+          <button
+            onClick={() => add(product, startingVariant)}
+            className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-sm font-semibold text-white transition hover:bg-carvex-800"
+          >
+            Agregar al carrito
+          </button>
+        )}
       </div>
     </article>
   );

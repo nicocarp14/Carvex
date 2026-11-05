@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import { getProductVariants } from "./productVariants.js";
 
 // Pedidos por WhatsApp: solo datos de contacto, sin dirección ni envío.
 // El pago y el envío se coordinan con el cliente en el chat.
@@ -7,7 +8,7 @@ export type CreateOrderInput = {
   customerName: string;
   customerEmail: string;
   customerPhone: string;
-  items: Array<{ slug: string; qty: number }>;
+  items: Array<{ slug: string; variantId?: string; qty: number }>;
 };
 
 export function validateOrder(input: Partial<CreateOrderInput>): string[] {
@@ -17,14 +18,22 @@ export function validateOrder(input: Partial<CreateOrderInput>): string[] {
   if (!input.customerPhone?.trim()) errors.push("customerPhone es requerido");
   if (!Array.isArray(input.items) || input.items.length === 0)
     errors.push("Al menos un producto es requerido");
-  if (input.items?.some((i) => !i.slug || !(i.qty >= 1)))
+  if (
+    input.items?.some(
+      (i) =>
+        !i.slug ||
+        !Number.isInteger(i.qty) ||
+        i.qty < 1 ||
+        (i.variantId !== undefined && typeof i.variantId !== "string"),
+    )
+  )
     errors.push("Cada ítem debe tener slug y qty >= 1");
 
   return errors;
 }
 
 export async function createOrder(prisma: PrismaClient, input: CreateOrderInput) {
-  const slugs = input.items.map((i) => i.slug);
+  const slugs = [...new Set(input.items.map((i) => i.slug))];
   const products = await prisma.product.findMany({
     where: { slug: { in: slugs } },
     include: { category: true },
@@ -34,17 +43,24 @@ export async function createOrder(prisma: PrismaClient, input: CreateOrderInput)
     throw new Error("Alguno de los productos no existe");
   }
 
-  const bySlug = new Map<string, { id: number; slug: string; price: number }>(
-    products.map((p: { id: number; slug: string; price: number }) => [p.slug, p]),
-  );
+  const bySlug = new Map(products.map((product) => [product.slug, product]));
 
-  // Sin envío calculado: el total es el subtotal.
-  // Pago y envío se coordinan por WhatsApp.
-  const subtotal = input.items.reduce((acc: number, it: { slug: string; qty: number }) => {
-    const p = bySlug.get(it.slug);
-    if (!p) throw new Error(`Producto no encontrado: ${it.slug}`);
-    return acc + p.price * it.qty;
-  }, 0);
+  const selectedItems = input.items.map((item) => {
+    const product = bySlug.get(item.slug);
+    if (!product) throw new Error(`Producto no encontrado: ${item.slug}`);
+    const variants = getProductVariants(product);
+    const variant = item.variantId
+      ? variants.find((candidate) => candidate.id === item.variantId)
+      : variants[0];
+    if (!variant) throw new Error(`Presentación no encontrada para ${product.name}`);
+    return { product, variant, quantity: item.qty };
+  });
+
+  // Sin envío calculado: el total es la suma de las presentaciones elegidas.
+  const subtotal = selectedItems.reduce(
+    (acc, item) => acc + item.variant.price * item.quantity,
+    0,
+  );
   const total = subtotal;
 
   const order = await prisma.order.create({
@@ -55,10 +71,12 @@ export async function createOrder(prisma: PrismaClient, input: CreateOrderInput)
       total,
       status: "PENDIENTE",
       items: {
-        create: input.items.map((it: { slug: string; qty: number }) => {
-          const p = bySlug.get(it.slug)!;
-          return { productId: p.id, quantity: it.qty, price: p.price };
-        }),
+        create: selectedItems.map(({ product, variant, quantity }) => ({
+          productId: product.id,
+          quantity,
+          price: variant.price,
+          variantSize: variant.size || null,
+        })),
       },
     },
     include: { items: { include: { product: true } } },

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useCart } from "../store/cart";
+import { cartItemKey, useCart } from "../store/cart";
 import { formatPrice } from "../lib/format";
 import ProductImage from "../components/ProductImage";
 
@@ -8,7 +8,7 @@ export default function Cart() {
   const setQty = useCart((s) => s.setQty);
   const remove = useCart((s) => s.remove);
   const clear = useCart((s) => s.clear);
-  const total = items.reduce((a, i) => a + i.product.price * i.qty, 0);
+  const total = items.reduce((a, i) => a + i.variant.price * i.qty, 0);
 
   if (items.length === 0) {
     return (
@@ -28,8 +28,8 @@ export default function Cart() {
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-4">
-          {items.map(({ product, qty }) => (
-            <article key={product.slug} className="flex gap-4 rounded-2xl border border-slate-200 p-4">
+          {items.map(({ product, variant, qty }) => (
+            <article key={cartItemKey({ product, variant })} className="flex gap-4 rounded-2xl border border-slate-200 p-4">
               <Link to={`/producto/${product.slug}`} className="h-24 w-24 shrink-0 overflow-hidden rounded-xl">
                 <ProductImage product={product} className="h-full w-full" />
               </Link>
@@ -38,16 +38,16 @@ export default function Cart() {
                 <Link to={`/producto/${product.slug}`} className="font-display font-semibold hover:text-carvex-600">
                   {product.name}
                 </Link>
-                <p className="text-sm text-slate-500">{product.size} · Venta a pedido</p>
+                <p className="text-sm text-slate-500">{variant.size} · Venta a pedido</p>
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center rounded-lg border border-slate-300">
-                    <button onClick={() => setQty(product.slug, qty - 1)} className="px-3 py-1">−</button>
+                    <button onClick={() => setQty(cartItemKey({ product, variant }), qty - 1)} className="px-3 py-1">−</button>
                     <span className="w-8 text-center text-sm font-semibold">{qty}</span>
-                    <button onClick={() => setQty(product.slug, qty + 1)} className="px-3 py-1">+</button>
+                    <button onClick={() => setQty(cartItemKey({ product, variant }), qty + 1)} className="px-3 py-1">+</button>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold">{formatPrice(product.price * qty)}</p>
-                    <button onClick={() => remove(product.slug)} className="text-xs text-red-600 hover:underline">
+                    <p className="font-bold">{formatPrice(variant.price * qty)}</p>
+                    <button onClick={() => remove(cartItemKey({ product, variant }))} className="text-xs text-red-600 hover:underline">
                       Quitar
                     </button>
                   </div>

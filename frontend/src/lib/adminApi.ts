@@ -7,6 +7,7 @@ import type {
   Order,
   OrderStatus,
   Product,
+  ProductVariant,
 } from "../types";
 
 // En desarrollo queda vacío y Vite usa el proxy /api → localhost:4000.
@@ -86,12 +87,10 @@ export const updateOrder = (
 export type ProductInput = {
   name: string;
   slug?: string;
-  price: number;
-  originalPrice: number | null;
   categoryId: number;
   description: string;
   usage: string;
-  size: string | null;
+  variants: ProductVariant[];
   imageUrl?: string;
   featured: boolean;
 };

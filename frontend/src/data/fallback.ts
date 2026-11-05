@@ -10,7 +10,7 @@ export const categoriesFallback: Category[] = [
 
 const cat = (id: number, name: string, slug: string): Category => ({ id, name, slug });
 
-const base: Array<Omit<Product, "category" | "brand" | "featured" | "related" | "originalPrice" | "imageUrl"> & {
+const base: Array<Omit<Product, "category" | "brand" | "featured" | "related" | "originalPrice" | "imageUrl" | "variants"> & {
   category: Category;
   originalPrice?: number;
   featured?: boolean;
@@ -48,4 +48,12 @@ export const productsFallback: Product[] = base.map((p) => ({
   originalPrice: p.originalPrice ?? null,
   featured: p.featured ?? false,
   imageUrl: "",
+  variants: [
+    {
+      id: (p.size ?? "unico").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      size: p.size ?? "",
+      price: p.price,
+      originalPrice: p.originalPrice ?? null,
+    },
+  ],
 }));

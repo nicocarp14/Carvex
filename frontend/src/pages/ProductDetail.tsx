@@ -12,6 +12,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
+  const [selectedVariantId, setSelectedVariantId] = useState("");
   const add = useCart((s) => s.add);
 
   useEffect(() => {
@@ -19,7 +20,10 @@ export default function ProductDetail() {
     setLoading(true);
     fetchProductBySlug(slug)
       .then((p) => {
-        if (active) setProduct(p);
+        if (active) {
+          setProduct(p);
+          setSelectedVariantId(p?.variants[0]?.id ?? "");
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -49,6 +53,9 @@ export default function ProductDetail() {
     );
 
   const related = product.related ?? [];
+  const selectedVariant =
+    product.variants.find((variant) => variant.id === selectedVariantId) ?? product.variants[0];
+  if (!selectedVariant) return null;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -72,14 +79,36 @@ export default function ProductDetail() {
           </span>
 
           <h1 className="mt-4 font-display text-3xl font-bold">{product.name}</h1>
-          <p className="text-sm text-slate-500">
-            {product.brand} · {product.size ?? ""}
-          </p>
+          <p className="text-sm text-slate-500">{product.brand}</p>
+
+          {product.variants.length > 1 && (
+            <div className="mt-4">
+              <label htmlFor="product-variant" className="mb-1 block text-sm font-medium">
+                Presentación
+              </label>
+              <select
+                id="product-variant"
+                value={selectedVariant.id}
+                onChange={(event) => setSelectedVariantId(event.target.value)}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-carvex-500 sm:max-w-xs"
+              >
+                {product.variants.map((variant) => (
+                  <option key={variant.id} value={variant.id}>
+                    {variant.size} · {formatPrice(variant.price)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-bold text-carvex-900">{formatPrice(product.price)}</span>
-            {product.originalPrice && (
-              <span className="text-lg text-slate-400 line-through">{formatPrice(product.originalPrice)}</span>
+            <span className="text-3xl font-bold text-carvex-900">
+              {formatPrice(selectedVariant.price)}
+            </span>
+            {selectedVariant.originalPrice && (
+              <span className="text-lg text-slate-400 line-through">
+                {formatPrice(selectedVariant.originalPrice)}
+              </span>
             )}
           </div>
           <p className="mt-1 text-sm text-slate-500">Precios en pesos argentinos (ARS), con IVA incluido.</p>
@@ -91,7 +120,7 @@ export default function ProductDetail() {
               <button onClick={() => setQty(qty + 1)} className="px-3 py-2">+</button>
             </div>
             <button
-              onClick={() => add(product, qty)}
+              onClick={() => add(product, selectedVariant, qty)}
               className="flex-1 rounded-lg bg-carvex-900 py-3 font-semibold text-white hover:bg-carvex-800"
             >
               Agregar al carrito

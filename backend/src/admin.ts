@@ -1,6 +1,11 @@
 import { Router } from "express";
 import type { PrismaClient, OrderStatus } from "@prisma/client";
 import { findAdminByEmail, requireAuth, signToken, verifyPassword } from "./auth.js";
+import {
+  variantIdForSize,
+  withProductVariants,
+  type ProductVariant,
+} from "./productVariants.js";
 
 const ORDER_STATUSES = [
   "PENDIENTE",
@@ -25,6 +30,15 @@ const isPositiveInt = (n: unknown): n is number =>
 
 export function adminRouter(prisma: PrismaClient) {
   const router = Router();
+  const withOrderProductVariants = <T extends { items: Array<{ product: Parameters<typeof withProductVariants>[0] }> }>(
+    order: T,
+  ) => ({
+    ...order,
+    items: order.items.map((item) => ({
+      ...item,
+      product: withProductVariants(item.product),
+    })),
+  });
 
   // ---------- Auth ----------
   router.post("/auth/login", async (req, res, next) => {
@@ -123,7 +137,7 @@ export function adminRouter(prisma: PrismaClient) {
         take: 200,
       });
 
-      res.json(orders);
+      res.json(orders.map(withOrderProductVariants));
     } catch (err) {
       next(err);
     }
@@ -139,7 +153,7 @@ export function adminRouter(prisma: PrismaClient) {
         include: { items: { include: { product: true } } },
       });
       if (!order) return res.status(404).json({ error: "Pedido no encontrado" });
-      res.json(order);
+      res.json(withOrderProductVariants(order));
     } catch (err) {
       next(err);
     }
@@ -172,7 +186,7 @@ export function adminRouter(prisma: PrismaClient) {
         include: { items: { include: { product: true } } },
       });
 
-      res.json(order);
+      res.json(withOrderProductVariants(order));
     } catch (err) {
       next(err);
     }
@@ -185,7 +199,7 @@ export function adminRouter(prisma: PrismaClient) {
         include: { category: true },
         orderBy: { name: "asc" },
       });
-      res.json(products);
+      res.json(products.map(withProductVariants));
     } catch (err) {
       next(err);
     }
@@ -193,38 +207,71 @@ export function adminRouter(prisma: PrismaClient) {
 
   const parseProduct = (body: Record<string, unknown>) => {
     const name = String(body.name ?? "").trim();
-    const price = Number(body.price);
     const categoryId = Number(body.categoryId);
     const description = String(body.description ?? "").trim();
     const usage = String(body.usage ?? "").trim();
     const errors: string[] = [];
 
     if (name.length < 2) errors.push("El nombre es obligatorio");
-    if (!Number.isInteger(price) || price <= 0) errors.push("El precio debe ser un entero mayor a 0");
     if (!isPositiveInt(categoryId)) errors.push("La categoría es obligatoria");
     if (!description) errors.push("La descripción es obligatoria");
     if (!usage) errors.push("El modo de uso es obligatorio");
 
-    const originalPriceRaw = body.originalPrice;
-    const originalPrice =
-      originalPriceRaw === null || originalPriceRaw === undefined || originalPriceRaw === ""
-        ? null
-        : Number(originalPriceRaw);
+    const rawVariants = Array.isArray(body.variants)
+      ? body.variants
+      : [{ size: body.size, price: body.price, originalPrice: body.originalPrice }];
+    const variants: ProductVariant[] = [];
 
-    if (originalPrice !== null && (!Number.isInteger(originalPrice) || originalPrice <= 0)) {
-      errors.push("El precio anterior debe ser un entero mayor a 0");
+    if (rawVariants.length === 0) errors.push("Agregá al menos una presentación");
+    for (const [index, rawVariant] of rawVariants.entries()) {
+      if (typeof rawVariant !== "object" || rawVariant === null || Array.isArray(rawVariant)) {
+        errors.push(`La presentación ${index + 1} es inválida`);
+        continue;
+      }
+
+      const variant = rawVariant as Record<string, unknown>;
+      const size = String(variant.size ?? "").trim() || "Único";
+      const price = Number(variant.price);
+      const originalPriceRaw = variant.originalPrice;
+      const originalPrice =
+        originalPriceRaw === null || originalPriceRaw === undefined || originalPriceRaw === ""
+          ? null
+          : Number(originalPriceRaw);
+      const id =
+        typeof variant.id === "string" && variant.id.trim()
+          ? variant.id.trim()
+          : variantIdForSize(size);
+
+      if (!Number.isInteger(price) || price <= 0) {
+        errors.push(`El precio de la presentación ${index + 1} debe ser un entero mayor a 0`);
+      }
+      if (originalPrice !== null && (!Number.isInteger(originalPrice) || originalPrice <= 0)) {
+        errors.push(`El precio anterior de la presentación ${index + 1} debe ser un entero mayor a 0`);
+      }
+      if (
+        variants.some(
+          (existing) =>
+            existing.id === id || variantIdForSize(existing.size) === variantIdForSize(size),
+        )
+      ) {
+        errors.push("Cada presentación debe tener un tamaño distinto");
+      }
+
+      variants.push({ id, size, price, originalPrice });
     }
 
+    const firstVariant = variants[0];
     return {
       errors,
       data: {
         name,
-        price,
-        originalPrice,
+        price: firstVariant?.price ?? 0,
+        originalPrice: firstVariant?.originalPrice ?? null,
         categoryId,
         description,
         usage,
-        size: body.size ? String(body.size).trim() || null : null,
+        size: firstVariant?.size || null,
+        variants,
         imageUrl: body.imageUrl ? String(body.imageUrl).trim() : "",
         featured: Boolean(body.featured),
       },
@@ -245,7 +292,7 @@ export function adminRouter(prisma: PrismaClient) {
         include: { category: true },
       });
 
-      res.status(201).json(product);
+      res.status(201).json(withProductVariants(product));
     } catch (err) {
       next(err);
     }
@@ -279,7 +326,7 @@ export function adminRouter(prisma: PrismaClient) {
         include: { category: true },
       });
 
-      res.json(product);
+      res.json(withProductVariants(product));
     } catch (err) {
       next(err);
     }

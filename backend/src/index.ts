@@ -4,6 +4,7 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import { createOrder, validateOrder, type CreateOrderInput } from "./orders.js";
 import { adminRouter } from "./admin.js";
+import { withProductVariants } from "./productVariants.js";
 
 // En desarrollo, Neon CLI escribe las URLs en la raíz del monorepo.
 // backend/.env tiene prioridad si existe (por ejemplo, en producción).
@@ -57,7 +58,7 @@ app.get("/api/products", async (req, res, next) => {
       include: { category: true },
       orderBy: [{ featured: "desc" }, { name: "asc" }],
     });
-    res.json(products);
+    res.json(products.map(withProductVariants));
   } catch (err) {
     next(err);
   }
@@ -80,7 +81,10 @@ app.get("/api/products/:slug", async (req, res, next) => {
       take: 4,
     });
 
-    res.json({ ...product, related });
+    res.json({
+      ...withProductVariants(product),
+      related: related.map(withProductVariants),
+    });
   } catch (err) {
     next(err);
   }
@@ -115,7 +119,13 @@ app.get("/api/orders/:id", async (req, res, next) => {
       include: { items: { include: { product: true } } },
     });
     if (!order) return res.status(404).json({ error: "Pedido no encontrado" });
-    res.json(order);
+    res.json({
+      ...order,
+      items: order.items.map((item) => ({
+        ...item,
+        product: withProductVariants(item.product),
+      })),
+    });
   } catch (err) {
     next(err);
   }

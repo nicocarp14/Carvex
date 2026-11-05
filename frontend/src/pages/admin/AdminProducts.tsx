@@ -13,10 +13,8 @@ import type { Category, Product } from "../../types";
 type FormState = {
   name: string;
   slug: string;
-  price: string;
-  originalPrice: string;
   categoryId: string;
-  size: string;
+  variants: Array<{ id: string; size: string; price: string; originalPrice: string }>;
   imageUrl: string;
   description: string;
   usage: string;
@@ -26,10 +24,8 @@ type FormState = {
 const emptyForm: FormState = {
   name: "",
   slug: "",
-  price: "",
-  originalPrice: "",
   categoryId: "",
-  size: "",
+  variants: [{ id: "", size: "", price: "", originalPrice: "" }],
   imageUrl: "",
   description: "",
   usage: "",
@@ -80,10 +76,13 @@ export default function AdminProducts() {
     setForm({
       name: product.name,
       slug: product.slug,
-      price: String(product.price),
-      originalPrice: product.originalPrice ? String(product.originalPrice) : "",
       categoryId: String(product.category.id),
-      size: product.size ?? "",
+      variants: product.variants.map((variant) => ({
+        id: variant.id,
+        size: variant.size,
+        price: String(variant.price),
+        originalPrice: variant.originalPrice ? String(variant.originalPrice) : "",
+      })),
       imageUrl: product.imageUrl ?? "",
       description: product.description,
       usage: product.usage,
@@ -103,6 +102,19 @@ export default function AdminProducts() {
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
+  const updateVariant = (
+    index: number,
+    key: "size" | "price" | "originalPrice",
+    value: string,
+  ) => {
+    setForm((prev) => ({
+      ...prev,
+      variants: prev.variants.map((variant, variantIndex) =>
+        variantIndex === index ? { ...variant, [key]: value } : variant,
+      ),
+    }));
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -110,12 +122,15 @@ export default function AdminProducts() {
     const payload: ProductInput = {
       name: form.name.trim(),
       slug: form.slug.trim() || undefined,
-      price: Number(form.price),
-      originalPrice: form.originalPrice.trim() ? Number(form.originalPrice) : null,
       categoryId: Number(form.categoryId),
       description: form.description.trim(),
       usage: form.usage.trim(),
-      size: form.size.trim() || null,
+      variants: form.variants.map((variant) => ({
+        id: variant.id,
+        size: variant.size.trim(),
+        price: Number(variant.price),
+        originalPrice: variant.originalPrice.trim() ? Number(variant.originalPrice) : null,
+      })),
       imageUrl: form.imageUrl.trim() || undefined,
       featured: form.featured,
     };
@@ -211,41 +226,96 @@ export default function AdminProducts() {
               </select>
             </div>
 
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Precio (ARS) *</label>
-              <input
-                required
-                type="number"
-                min={1}
-                step={1}
-                value={form.price}
-                onChange={(e) => set("price", e.target.value)}
-                className={inputCls}
-                placeholder="25000"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Precio anterior</label>
-              <input
-                type="number"
-                min={1}
-                step={1}
-                value={form.originalPrice}
-                onChange={(e) => set("originalPrice", e.target.value)}
-                className={inputCls}
-                placeholder="Opcional"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">Tamaño</label>
-              <input
-                value={form.size}
-                onChange={(e) => set("size", e.target.value)}
-                className={inputCls}
-                placeholder="Ej: 500ml"
-              />
+            <div className="sm:col-span-2 lg:col-span-3">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-800">Presentaciones y precios *</h3>
+                  <p className="text-xs text-slate-500">
+                    Una sola ficha e imagen; agregá un tamaño y precio por cada opción.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    set("variants", [
+                      ...form.variants,
+                      { id: "", size: "", price: "", originalPrice: "" },
+                    ])
+                  }
+                  className="shrink-0 rounded-lg border border-carvex-900 px-3 py-2 text-xs font-semibold text-carvex-900 hover:bg-carvex-50"
+                >
+                  + Agregar tamaño
+                </button>
+              </div>
+              <div className="space-y-3">
+                {form.variants.map((variant, index) => (
+                  <div
+                    key={index}
+                    className="grid gap-3 rounded-lg border border-slate-200 p-3 sm:grid-cols-3"
+                  >
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-slate-600">
+                        Tamaño
+                      </label>
+                      <input
+                        required
+                        value={variant.size}
+                        onChange={(event) => updateVariant(index, "size", event.target.value)}
+                        className={inputCls}
+                        placeholder="Ej: 500 ml"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-slate-600">
+                        Precio (ARS) *
+                      </label>
+                      <input
+                        required
+                        type="number"
+                        min={1}
+                        step={1}
+                        value={variant.price}
+                        onChange={(event) => updateVariant(index, "price", event.target.value)}
+                        className={inputCls}
+                        placeholder="25000"
+                      />
+                    </div>
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1">
+                        <label className="mb-1 block text-xs font-medium text-slate-600">
+                          Precio anterior
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          step={1}
+                          value={variant.originalPrice}
+                          onChange={(event) =>
+                            updateVariant(index, "originalPrice", event.target.value)
+                          }
+                          className={inputCls}
+                          placeholder="Opcional"
+                        />
+                      </div>
+                      {form.variants.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            set(
+                              "variants",
+                              form.variants.filter((_, variantIndex) => variantIndex !== index),
+                            )
+                          }
+                          aria-label={`Quitar presentación ${variant.size || index + 1}`}
+                          className="rounded-lg border border-rose-200 px-3 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50"
+                        >
+                          Quitar
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div>
@@ -350,7 +420,15 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-4 py-3 text-slate-600">{product.category?.name ?? "—"}</td>
                   <td className="whitespace-nowrap px-4 py-3">
-                    <p className="font-semibold text-slate-800">{formatPrice(product.price)}</p>
+                    <p className="font-semibold text-slate-800">
+                      {product.variants.length > 1 ? "Desde " : ""}
+                      {formatPrice(product.price)}
+                    </p>
+                    {product.variants.length > 1 && (
+                      <p className="text-xs text-slate-500">
+                        {product.variants.map((variant) => variant.size).join(" · ")}
+                      </p>
+                    )}
                     {product.originalPrice && (
                       <p className="text-xs text-slate-400 line-through">
                         {formatPrice(product.originalPrice)}
