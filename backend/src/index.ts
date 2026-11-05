@@ -4,6 +4,7 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import { SHIPPING } from "./shipping.js";
 import { createOrder, validateOrder, type CreateOrderInput } from "./orders.js";
+import { adminRouter } from "./admin.js";
 
 // En desarrollo, Neon CLI escribe las URLs en la raíz del monorepo.
 // backend/.env tiene prioridad si existe (por ejemplo, en producción).
@@ -124,6 +125,9 @@ app.get("/api/orders/:id", async (req, res, next) => {
     next(err);
   }
 });
+
+// Panel admin — auth + /admin/* (protegido con JWT)
+app.use("/api", adminRouter(prisma));
 
 // Error handler simple
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

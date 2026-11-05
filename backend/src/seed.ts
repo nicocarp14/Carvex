@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { categories, products } from "./data/products.js";
+import { hashPassword } from "./auth.js";
 
 const prisma = new PrismaClient();
 
@@ -52,6 +53,20 @@ async function main() {
 
   const count = await prisma.product.count();
   console.log(`Seed OK — ${count} productos en la base.`);
+
+  // Usuario administrador del panel (/admin).
+  const adminEmail = (process.env.ADMIN_EMAIL ?? "admin@carvex.com.ar").toLowerCase().trim();
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "carvex1234";
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: { password: await hashPassword(adminPassword) },
+    create: {
+      email: adminEmail,
+      password: await hashPassword(adminPassword),
+      name: "Administrador Carvex",
+    },
+  });
+  console.log(`Admin OK — ${adminEmail}`);
 }
 
 main()
