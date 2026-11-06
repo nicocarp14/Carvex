@@ -11,6 +11,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "Carvex | Detailing Vonixx Argentina";
     Promise.all([fetchProducts({ featured: true }), fetchCategories()])
       .then(([productos, cats]) => {
         setFeatured(productos);

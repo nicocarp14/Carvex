@@ -34,6 +34,12 @@ export default function ProductDetail() {
     };
   }, [slug]);
 
+  useEffect(() => {
+    document.title = product
+      ? `${product.name} (${product.brand}) | Carvex`
+      : "Carvex | Detailing Vonixx Argentina";
+  }, [product]);
+
   if (loading)
     return (
       <div className="mx-auto max-w-7xl px-4 py-20 text-center text-slate-500">

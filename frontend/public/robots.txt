@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://carvexcorrientes.vercel.app/sitemap.xml

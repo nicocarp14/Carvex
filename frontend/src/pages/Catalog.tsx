@@ -18,6 +18,15 @@ export default function Catalog() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const categoryName = category
+      ? categories.find((c) => c.slug === category)?.name
+      : null;
+    document.title = categoryName
+      ? `${categoryName} | Catálogo Vonixx — Carvex`
+      : "Catálogo Vonixx — Carvex";
+  }, [category, categories]);
+
+  useEffect(() => {
     setCategory(searchParams.get("category") ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
