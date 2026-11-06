@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchProductBySlug } from "../lib/api";
+import { flyToCart } from "../lib/flyToCart";
 import type { Product } from "../types";
 import { formatPrice } from "../lib/format";
 import { useCart } from "../store/cart";
@@ -12,6 +13,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
   const [selectedVariantId, setSelectedVariantId] = useState("");
   const add = useCart((s) => s.add);
 
@@ -163,10 +165,15 @@ export default function ProductDetail() {
               <button onClick={() => setQty(qty + 1)} className="px-3 py-2">+</button>
             </div>
             <button
-              onClick={() => add(product, selectedVariant, qty)}
-              className="flex-1 rounded-lg bg-carvex-900 py-3 font-semibold text-white hover:bg-carvex-800"
+              onClick={(e) => {
+                add(product, selectedVariant, qty);
+                flyToCart(e.currentTarget);
+                setAdded(true);
+                window.setTimeout(() => setAdded(false), 1400);
+              }}
+              className={`flex-1 rounded-lg py-3 font-semibold text-white transition ${added ? "bg-emerald-600" : "bg-carvex-900 hover:bg-carvex-800"}`}
             >
-              Agregar al carrito
+              {added ? "✓ Agregado" : "Agregar al carrito"}
             </button>
           </div>
           <Link

@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import type { Product } from "../types";
 import { formatPrice } from "../lib/format";
 import { useCart } from "../store/cart";
+import { flyToCart } from "../lib/flyToCart";
 import ProductImage from "./ProductImage";
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -19,6 +21,13 @@ export default function ProductCard({ product }: { product: Product }) {
         originalPrice: product.originalPrice,
       };
   const variantCount = variants.length > 0 ? variants.length : 1;
+  const [added, setAdded] = useState(false);
+  const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
+    add(product, startingVariant);
+    flyToCart(e.currentTarget);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1400);
+  };
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
@@ -69,10 +78,10 @@ export default function ProductCard({ product }: { product: Product }) {
           </Link>
         ) : (
           <button
-            onClick={() => add(product, startingVariant)}
-            className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-sm font-semibold text-white transition hover:bg-carvex-800"
+            onClick={handleAdd}
+            className={`mt-4 rounded-lg py-2.5 text-sm font-semibold text-white transition ${added ? "bg-emerald-600" : "bg-carvex-900 hover:bg-carvex-800"}`}
           >
-            Agregar al carrito
+            {added ? "✓ Agregado" : "Agregar al carrito"}
           </button>
         )}
       </div>

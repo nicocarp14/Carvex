@@ -22,6 +22,21 @@ export default {
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["Sora", "Inter", "sans-serif"],
       },
+      animation: {
+        "cart-pop": "cart-pop .45s cubic-bezier(.34,1.56,.64,1)",
+        "fade-up": "fade-up .5s ease-out both",
+      },
+      keyframes: {
+        "cart-pop": {
+          "0%": { transform: "scale(1)" },
+          "40%": { transform: "scale(1.35)" },
+          "100%": { transform: "scale(1)" },
+        },
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(14px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+      },
     },
   },
   plugins: [],

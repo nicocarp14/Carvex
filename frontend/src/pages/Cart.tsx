@@ -28,8 +28,12 @@ export default function Cart() {
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-4">
-          {items.map(({ product, variant, qty }) => (
-            <article key={cartItemKey({ product, variant })} className="flex gap-4 rounded-2xl border border-slate-200 p-4">
+          {items.map(({ product, variant, qty }, i) => (
+            <article
+              key={cartItemKey({ product, variant })}
+              style={{ animationDelay: `${i * 60}ms` }}
+              className="flex animate-fade-up gap-4 rounded-2xl border border-slate-200 p-4"
+            >
               <Link to={`/producto/${product.slug}`} className="h-24 w-24 shrink-0 overflow-hidden rounded-xl">
                 <ProductImage product={product} className="h-full w-full" />
               </Link>

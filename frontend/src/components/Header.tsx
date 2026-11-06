@@ -19,12 +19,21 @@ const links = [
 export default function Header() {
   const count = useCart((s) => s.items.reduce((a, i) => a + i.qty, 0));
   const [open, setOpen] = useState(false);
+  const [pop, setPop] = useState(false);
   const location = useLocation();
 
   // Cierra el menú al navegar a otra ruta.
   useEffect(() => {
     setOpen(false);
   }, [location.pathname, location.search]);
+
+  // Pop del badge al agregar productos
+  useEffect(() => {
+    if (count === 0) return;
+    setPop(true);
+    const t = setTimeout(() => setPop(false), 500);
+    return () => clearTimeout(t);
+  }, [count]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
@@ -46,6 +55,7 @@ export default function Header() {
           {/* Carrito */}
           <Link
             to="/carrito"
+            data-cart-anchor="true"
             aria-label={`Carrito${count > 0 ? `, ${count} productos` : ""}`}
             className="relative flex items-center gap-2 rounded-lg bg-carvex-900 px-3 py-2 text-sm font-semibold text-white hover:bg-carvex-800 md:px-4"
           >
@@ -66,7 +76,10 @@ export default function Header() {
             </svg>
             <span className="hidden md:inline">Carrito</span>
             {count > 0 && (
-              <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-carvex-500 px-1 text-xs font-bold text-white">
+              <span
+                key={count}
+                className={`absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-carvex-500 px-1 text-xs font-bold text-white ${pop ? "animate-cart-pop" : ""}`}
+              >
                 {count}
               </span>
             )}
