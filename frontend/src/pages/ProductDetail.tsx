@@ -53,7 +53,7 @@ export default function ProductDetail() {
     );
 
   const related = product.related ?? [];
-  // Guard: productos legacy sin variants usan price/size como única presentación.
+  // Guard: productos legacy sin variants usan price/size como único tamaño.
   const variants =
     product.variants && product.variants.length > 0 ? product.variants : [];
   const legacyVariant = {
@@ -102,7 +102,7 @@ export default function ProductDetail() {
           <h1 className="mt-4 font-display text-3xl font-bold">{product.name}</h1>
           <p className="text-sm text-slate-500">{product.brand}</p>
 
-          {/* Presentación: botones (una sola card por producto, varios tamaños) */}
+          {/* Tamaño: botones (una sola card por producto, varios tamaños) */}
           {variants.length > 1 && (
             <fieldset className="mt-5">
               <legend className="text-sm text-slate-600">

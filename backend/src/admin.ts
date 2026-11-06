@@ -222,10 +222,10 @@ export function adminRouter(prisma: PrismaClient) {
       : [{ size: body.size, price: body.price, originalPrice: body.originalPrice }];
     const variants: ProductVariant[] = [];
 
-    if (rawVariants.length === 0) errors.push("Agregá al menos una presentación");
+    if (rawVariants.length === 0) errors.push("Agregá al menos un tamaño");
     for (const [index, rawVariant] of rawVariants.entries()) {
       if (typeof rawVariant !== "object" || rawVariant === null || Array.isArray(rawVariant)) {
-        errors.push(`La presentación ${index + 1} es inválida`);
+        errors.push(`El tamaño ${index + 1} es inválido`);
         continue;
       }
 
@@ -243,10 +243,10 @@ export function adminRouter(prisma: PrismaClient) {
           : variantIdForSize(size);
 
       if (!Number.isInteger(price) || price <= 0) {
-        errors.push(`El precio de la presentación ${index + 1} debe ser un entero mayor a 0`);
+        errors.push(`El precio del tamaño ${index + 1} debe ser un entero mayor a 0`);
       }
       if (originalPrice !== null && (!Number.isInteger(originalPrice) || originalPrice <= 0)) {
-        errors.push(`El precio anterior de la presentación ${index + 1} debe ser un entero mayor a 0`);
+        errors.push(`El precio anterior del tamaño ${index + 1} debe ser un entero mayor a 0`);
       }
       if (
         variants.some(
@@ -254,7 +254,7 @@ export function adminRouter(prisma: PrismaClient) {
             existing.id === id || variantIdForSize(existing.size) === variantIdForSize(size),
         )
       ) {
-        errors.push("Cada presentación debe tener un tamaño distinto");
+        errors.push("Cada tamaño debe ser distinto");
       }
 
       variants.push({ id, size, price, originalPrice });

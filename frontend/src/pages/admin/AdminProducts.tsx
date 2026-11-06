@@ -306,7 +306,7 @@ export default function AdminProducts() {
                               form.variants.filter((_, variantIndex) => variantIndex !== index),
                             )
                           }
-                          aria-label={`Quitar presentación ${variant.size || index + 1}`}
+                          aria-label={`Quitar tamaño ${variant.size || index + 1}`}
                           className="rounded-lg border border-rose-200 px-3 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50"
                         >
                           Quitar

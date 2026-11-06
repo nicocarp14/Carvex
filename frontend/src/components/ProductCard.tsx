@@ -65,7 +65,7 @@ export default function ProductCard({ product }: { product: Product }) {
             to={`/producto/${product.slug}`}
             className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-carvex-800"
           >
-            Elegir presentación
+            Elegir tamaño
           </Link>
         ) : (
           <button

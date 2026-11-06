@@ -57,7 +57,7 @@ automático para evitarlo: ver [`KEEPALIVE.md`](./KEEPALIVE.md).
 
 ## Próximos sprints
 
-- **Sprint 4:** Recrear los 5 productos con las fotos de `frontend/public/productos/` (Alumax con 2-3 tamaños en 1 producto, resto con 1 presentación)
+- **Sprint 4:** Recrear los 5 productos con las fotos de `frontend/public/productos/` (Alumax con 2-3 tamaños en 1 producto, resto con 1 tamaño)
 - **Sprint 5:** SEO, analytics
 
 ## Seguridad (IMPORTANTE)

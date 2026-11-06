@@ -12,4 +12,4 @@ Estas fotos se subieron para crear los productos directamente desde el panel:
 
 Ojo: el nombre de archivo es case-sensitive (`Darker.jpg` con mayúscula).
 Al crear el producto en `/admin/productos` poner como imagen `/productos/alumax.jpg`
-y cargar cada tamaño como una presentación (no como productos separados).
+y cargar cada tamaño como una tamaño (no como productos separados).

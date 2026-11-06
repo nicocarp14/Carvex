@@ -83,7 +83,7 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Int // precio snapshot al momento de la compra (ARS)
-  variantSize String? // presentación elegida al momento de la compra
+  variantSize String? // tamaño elegida al momento de la compra
 
   @@index([orderId])
 }
