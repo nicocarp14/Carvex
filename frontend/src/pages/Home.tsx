@@ -20,38 +20,58 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Solo categorías con productos para no llevar a vacíos (ej: Interior 0)
+  const visibleCategories = categories
+    .filter((c) => (c._count?.products ?? 1) > 0)
+    .sort((a, b) => (b._count?.products ?? 0) - (a._count?.products ?? 0));
+  const totalProducts = categories.reduce((acc, c) => acc + (c._count?.products ?? 0), 0);
+
   return (
     <div>
       {/* BANNER */}
       <HeroBanner />
 
-      {/* CATEGORÍAS */}
+      {/* QUÉ BUSCÁS HOY? + CTA CATÁLOGO (A + C) */}
       <section className="mx-auto max-w-7xl px-4 py-14">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="font-display text-2xl font-bold">Comprá por categoría</h2>
-            <p className="text-slate-600">Lavado, protección, pulido, interior y exterior.</p>
-          </div>
-          <Link to="/catalogo" className="hidden text-sm font-semibold text-carvex-600 hover:underline md:block">
-            Ver todo →
-          </Link>
-        </div>
-        <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
+        <h2 className="font-display text-2xl font-bold">¿Qué buscás hoy?</h2>
+        <p className="mt-1 text-slate-600">
+          Productos Vonixx originales por tipo de tarea — a pedido, con seguimiento, a todo el país.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
           {loading ? (
-            <p className="col-span-full text-sm text-slate-500">Cargando categorías...</p>
+            <p className="text-sm text-slate-500">Cargando categorías...</p>
           ) : (
-            categories.map((c) => (
-            <Link
-              key={c.slug}
-              to={`/catalogo?category=${c.slug}`}
-              className="rounded-2xl bg-carvex-900 p-5 text-white transition hover:bg-carvex-800"
-            >
-              <p className="font-display font-semibold">{c.name}</p>
-              <p className="mt-1 text-xs text-carvex-200">{c._count?.products ?? ""}</p>
-              <p className="mt-6 text-sm font-semibold text-carvex-300">Explorar →</p>
-            </Link>
+            visibleCategories.map((c) => (
+              <Link
+                key={c.slug}
+                to={`/catalogo?category=${c.slug}`}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-carvex-900 hover:bg-carvex-900 hover:text-white"
+              >
+                {c.name}
+                {c._count?.products != null ? (
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600 [a:hover>&]:bg-white/20 [a:hover>&]:text-white">
+                    {c._count.products}
+                  </span>
+                ) : null}
+              </Link>
             ))
           )}
+        </div>
+        <div className="mt-8 flex flex-col gap-6 rounded-3xl bg-carvex-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
+          <div>
+            <h3 className="font-display text-xl font-bold md:text-2xl">
+              Explorá todo el catálogo Vonixx — {totalProducts} productos
+            </h3>
+            <p className="mt-2 text-sm text-carvex-200">
+              100% originales · Envío en 3–7 días · Pedido por WhatsApp
+            </p>
+          </div>
+          <Link
+            to="/catalogo"
+            className="whitespace-nowrap rounded-full bg-white px-6 py-3 text-sm font-bold text-carvex-900 transition hover:bg-slate-100"
+          >
+            Ver catálogo completo →
+          </Link>
         </div>
       </section>
 

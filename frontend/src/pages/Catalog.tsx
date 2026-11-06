@@ -67,6 +67,9 @@ export default function Catalog() {
     setSearchParams(sp, { replace: true });
   };
 
+  // Ocultar categorías vacías para no llevar a páginas sin productos
+  const visibleCategories = categories.filter((c) => (c._count?.products ?? 1) > 0);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <h1 className="font-display text-3xl font-bold">Catálogo Vonixx</h1>
@@ -93,13 +96,18 @@ export default function Catalog() {
             >
               Todas
             </button>
-            {categories.map((c) => (
+            {visibleCategories.map((c) => (
               <button
                 key={c.slug}
                 onClick={() => upd(c.slug)}
-                className={`block w-full rounded-lg px-3 py-2 text-left text-sm ${category === c.slug ? "bg-carvex-900 text-white" : "hover:bg-slate-100"}`}
+                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm ${category === c.slug ? "bg-carvex-900 text-white" : "hover:bg-slate-100"}`}
               >
-                {c.name}
+                <span>{c.name}</span>
+                {c._count?.products != null ? (
+                  <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${category === c.slug ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"}`}>
+                    {c._count.products}
+                  </span>
+                ) : null}
               </button>
             ))}
           </div>

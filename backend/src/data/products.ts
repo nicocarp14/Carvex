@@ -12,11 +12,12 @@ export type SeedProduct = {
 };
 
 export const categories: SeedCategory[] = [
-  { name: "Lavado", slug: "lavado" },
-  { name: "Protección", slug: "proteccion" },
-  { name: "Pulido", slug: "pulido" },
-  { name: "Interior", slug: "interior" },
-  { name: "Exterior", slug: "exterior" },
+  { name: "Lavado y Descontaminación", slug: "lavado" },
+  { name: "Pulimentos", slug: "pulimentos" },
+  { name: "Ceras", slug: "ceras" },
+  { name: "Selladores y Protección", slug: "selladores" },
+  { name: "Acondicionadores e Interior", slug: "interior" },
+  { name: "Llantas y Exterior", slug: "exterior" },
 ];
 
 /**
@@ -108,7 +109,7 @@ export const products: SeedProduct[] = [
   {
     name: "Native Hybrid Wax",
     slug: "vonixx-native-hybrid-wax",
-    categorySlug: "proteccion",
+    categorySlug: "ceras",
     price: 24500,
     size: "120g",
     featured: true,
@@ -120,7 +121,7 @@ export const products: SeedProduct[] = [
   {
     name: "Native Wax",
     slug: "vonixx-native-wax",
-    categorySlug: "proteccion",
+    categorySlug: "ceras",
     price: 21500,
     size: "120g",
     description:
@@ -131,7 +132,7 @@ export const products: SeedProduct[] = [
   {
     name: "Renova Wax",
     slug: "vonixx-renova-wax",
-    categorySlug: "proteccion",
+    categorySlug: "ceras",
     price: 19500,
     size: "120g",
     description:
@@ -142,7 +143,7 @@ export const products: SeedProduct[] = [
   {
     name: "Ceratec",
     slug: "vonixx-ceratec",
-    categorySlug: "proteccion",
+    categorySlug: "selladores",
     price: 32500,
     size: "250ml",
     featured: true,
@@ -154,7 +155,7 @@ export const products: SeedProduct[] = [
   {
     name: "Radix",
     slug: "vonixx-radix",
-    categorySlug: "pulido",
+    categorySlug: "pulimentos",
     price: 28900,
     size: "500ml",
     featured: true,
@@ -166,7 +167,7 @@ export const products: SeedProduct[] = [
   {
     name: "American Polish",
     slug: "vonixx-american-polish",
-    categorySlug: "pulido",
+    categorySlug: "pulimentos",
     price: 27500,
     size: "500ml",
     description:
@@ -177,7 +178,7 @@ export const products: SeedProduct[] = [
   {
     name: "V-40",
     slug: "vonixx-v-40",
-    categorySlug: "pulido",
+    categorySlug: "pulimentos",
     price: 18500,
     size: "500ml",
     description:
@@ -188,7 +189,7 @@ export const products: SeedProduct[] = [
   {
     name: "V-45",
     slug: "vonixx-v-45",
-    categorySlug: "pulido",
+    categorySlug: "pulimentos",
     price: 19800,
     size: "500ml",
     description:
@@ -199,7 +200,7 @@ export const products: SeedProduct[] = [
   {
     name: "Rosca Pasta",
     slug: "vonixx-rosca-pasta",
-    categorySlug: "pulido",
+    categorySlug: "pulimentos",
     price: 16500,
     size: "500ml",
     description:
@@ -266,7 +267,7 @@ export const products: SeedProduct[] = [
   {
     name: "V-Protect",
     slug: "vonixx-v-protect",
-    categorySlug: "proteccion",
+    categorySlug: "selladores",
     price: 19900,
     size: "500ml",
     description:
@@ -277,7 +278,7 @@ export const products: SeedProduct[] = [
   {
     name: "V-Compound",
     slug: "vonixx-v-compound",
-    categorySlug: "pulido",
+    categorySlug: "pulimentos",
     price: 17200,
     size: "500ml",
     originalPrice: 20500,
@@ -289,7 +290,7 @@ export const products: SeedProduct[] = [
   {
     name: "V-Nano Pro",
     slug: "vonixx-v-nano-pro",
-    categorySlug: "proteccion",
+    categorySlug: "selladores",
     price: 35800,
     size: "250ml",
     featured: true,

@@ -11,7 +11,7 @@ async function main() {
   for (const c of categories) {
     await prisma.category.upsert({
       where: { slug: c.slug },
-      update: {},
+      update: { name: c.name },
       create: c,
     });
   }
@@ -27,6 +27,7 @@ async function main() {
       where: { slug: p.slug },
       update: {
         name: p.name,
+        categoryId,
         price: p.price,
         originalPrice: p.originalPrice ?? null,
         size: p.size,
@@ -50,6 +51,11 @@ async function main() {
       },
     });
   }
+
+  // Limpiar categorías legacy si quedaron vacías tras migrar a las nuevas (6)
+  await prisma.category.deleteMany({
+    where: { slug: { in: ["proteccion", "pulido"] }, products: { none: {} } },
+  });
 
   const count = await prisma.product.count();
   console.log(`Seed OK — ${count} productos en la base.`);

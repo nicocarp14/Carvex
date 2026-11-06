@@ -20,7 +20,7 @@ enum OrderStatus {
 
 model Category {
   id        Int       @id @default(autoincrement())
-  name      String    @unique // Ej: Lavado, Protección, Pulido, Interior
+  name      String    @unique // Ej: Lavado y Descontaminación, Pulimentos, Ceras, Selladores,
   slug      String    @unique
   products  Product[]
   createdAt DateTime  @default(now())
