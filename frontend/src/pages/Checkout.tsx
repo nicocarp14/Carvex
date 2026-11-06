@@ -4,6 +4,7 @@ import { useCart } from "../store/cart";
 import { formatPrice } from "../lib/format";
 import { createOrder } from "../lib/api";
 import { buildWhatsAppMessage, buildWhatsAppUrl } from "../lib/whatsapp";
+import { trackBeginCheckout, trackPurchase } from "../lib/analytics";
 import ProductImage from "../components/ProductImage";
 
 export default function Checkout() {
@@ -25,6 +26,7 @@ export default function Checkout() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    trackBeginCheckout(subtotal);
     if (!acceptOnOrder) {
       setError("Tenés que aceptar la demora estimada a pedido para continuar.");
       return;
@@ -64,6 +66,7 @@ export default function Checkout() {
       }
 
       setSuccess({ orderId: data.order.id, whatsappUrl });
+      trackPurchase(data.subtotal, data.order.id);
       clear();
     } catch (err) {
       whatsappWindow?.close();

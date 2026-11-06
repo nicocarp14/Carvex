@@ -4,6 +4,7 @@ import type { Product } from "../types";
 import { formatPrice } from "../lib/format";
 import { useCart } from "../store/cart";
 import { flyToCart } from "../lib/flyToCart";
+import { trackAddToCart } from "../lib/analytics";
 import ProductImage from "./ProductImage";
 import VariantModal from "./VariantModal";
 
@@ -26,6 +27,7 @@ export default function ProductCard({ product }: { product: Product }) {
   const [modalOpen, setModalOpen] = useState(false);
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     add(product, startingVariant);
+    trackAddToCart({ productSlug: product.slug, price: startingVariant.price, quantity: 1 });
     flyToCart(e.currentTarget);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1400);

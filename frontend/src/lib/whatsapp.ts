@@ -20,11 +20,14 @@ export const buildWhatsAppMessage = (opts: {
   lines.push("");
   lines.push("Productos:");
   for (const { product, variant, qty } of items) {
+    const price = variant.price * qty;
     const size = variant.size ? ` (${variant.size})` : "";
-    lines.push(`• ${qty}x ${product.name}${size} - $${(variant.price * qty).toLocaleString("es-AR")}`);
+    lines.push(`• ${qty}x ${product.name}${size} — $${price.toLocaleString("es-AR")}`);
   }
   lines.push("");
   lines.push(`Subtotal: $${subtotal.toLocaleString("es-AR")}`);
+  lines.push(`Envío: a coordinar`);
+  lines.push(`Total: $${subtotal.toLocaleString("es-AR")}`);
   lines.push("");
   lines.push("Mis datos:");
   lines.push(`Nombre: ${customerName}`);

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { fetchProductBySlug } from "../lib/api";
 import { flyToCart } from "../lib/flyToCart";
+import { trackAddToCart } from "../lib/analytics";
+import { buildProductJsonLd } from "../lib/jsonLd";
 import type { Product } from "../types";
 import { formatPrice } from "../lib/format";
 import { useCart } from "../store/cart";
@@ -88,6 +90,7 @@ export default function ProductDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
+      <script type="application/ld+json">{JSON.stringify(buildProductJsonLd(product))}</script>
       <nav className="text-sm text-slate-500">
         <Link to="/" className="hover:text-carvex-900">Inicio</Link> /{" "}
         <Link to="/catalogo" className="hover:text-carvex-900">Catálogo</Link> /{" "}
@@ -167,6 +170,7 @@ export default function ProductDetail() {
             <button
               onClick={(e) => {
                 add(product, selectedVariant, qty);
+                trackAddToCart({ productSlug: product.slug, price: selectedVariant.price, quantity: qty });
                 flyToCart(e.currentTarget);
                 setAdded(true);
                 window.setTimeout(() => setAdded(false), 1400);

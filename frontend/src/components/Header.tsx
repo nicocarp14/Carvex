@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../store/cart";
 
 const linkCls = ({ isActive }: { isActive: boolean }) =>
@@ -20,6 +20,8 @@ export default function Header() {
   const count = useCart((s) => s.items.reduce((a, i) => a + i.qty, 0));
   const [open, setOpen] = useState(false);
   const [pop, setPop] = useState(false);
+  const [term, setTerm] = useState("");
+  const navigate = useNavigate();
   const location = useLocation();
 
   // Cierra el menú al navegar a otra ruta.
@@ -35,9 +37,17 @@ export default function Header() {
     return () => clearTimeout(t);
   }, [count]);
 
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const t = term.trim();
+    setOpen(false);
+    setTerm("");
+    navigate(t ? `/catalogo?q=${encodeURIComponent(t)}` : "/catalogo");
+  };
+
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:h-20">
         <Link to="/" className="flex items-center">
           <img src="/logoiso.webp" alt="Carvex" className="h-12 w-auto object-contain md:h-16" />
         </Link>
@@ -106,6 +116,25 @@ export default function Header() {
           </button>
         </div>
       </div>
+
+      {/* Buscador móvil — fila siempre visible debajo del header */}
+      <form onSubmit={onSearch} className="border-t border-slate-100 px-4 py-2 md:hidden">
+        <div className="flex gap-2">
+          <input
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            placeholder="Buscá por nombre…"
+            aria-label="Buscar producto por nombre"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-carvex-900"
+          />
+          <button
+            type="submit"
+            className="whitespace-nowrap rounded-lg bg-carvex-900 px-4 py-2 text-sm font-bold text-white hover:bg-carvex-800"
+          >
+            Buscar
+          </button>
+        </div>
+      </form>
 
       {/* Menú desplegable móvil */}
       {open && (

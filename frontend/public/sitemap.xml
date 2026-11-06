@@ -16,8 +16,33 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://carvexcorrientes.vercel.app/carrito</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://carvexcorrientes.vercel.app/catalogo?category=lavado</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://carvexcorrientes.vercel.app/catalogo?category=pulimentos</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://carvexcorrientes.vercel.app/catalogo?category=ceras</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://carvexcorrientes.vercel.app/catalogo?category=selladores</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://carvexcorrientes.vercel.app/catalogo?category=interior</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://carvexcorrientes.vercel.app/catalogo?category=exterior</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

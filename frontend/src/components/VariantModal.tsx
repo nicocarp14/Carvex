@@ -4,6 +4,7 @@ import type { Product } from "../types";
 import { formatPrice } from "../lib/format";
 import { useCart } from "../store/cart";
 import { flyToCart } from "../lib/flyToCart";
+import { trackAddToCart } from "../lib/analytics";
 import ProductImage from "./ProductImage";
 
 type Props = {
@@ -49,6 +50,7 @@ export default function VariantModal({ product, open, onClose }: Props) {
 
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     add(product, selected, 1);
+    trackAddToCart({ productSlug: product.slug, price: selected.price, quantity: 1 });
     flyToCart(e.currentTarget);
     setAdded(true);
     window.setTimeout(() => {

@@ -32,6 +32,36 @@ app.use(express.json());
 
 app.get("/api/health", (_req, res) => res.json({ ok: true, service: "carvex-api" }));
 
+// Sitemap dinámico (también queda el estático en frontend/public)
+app.get("/sitemap.xml", async (_req, res, next) => {
+  try {
+    const [products, categories] = await Promise.all([
+      prisma.product.findMany({ select: { slug: true, updatedAt: true }, orderBy: { name: "asc" } }),
+      prisma.category.findMany({ select: { slug: true, updatedAt: true }, orderBy: { name: "asc" } }),
+    ]);
+    const base = "https://carvexcorrientes.vercel.app";
+    const esc = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const url = (loc: string, lastmod?: Date, priority = "0.8", changefreq = "weekly") =>
+      `  <url><loc>${esc(loc)}</loc>${lastmod ? `<lastmod>${lastmod.toISOString().slice(0, 10)}</lastmod>` : ""}<changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`;
+    const lines = [
+      `<?xml version="1.0" encoding="UTF-8"?>`,
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
+      url(`${base}/`, undefined, "1.0", "weekly"),
+      url(`${base}/catalogo`, undefined, "0.9", "weekly"),
+      url(`${base}/como-funciona`, undefined, "0.7", "monthly"),
+      ...categories.map((c) =>
+        url(`${base}/catalogo?category=${encodeURIComponent(c.slug)}`, c.updatedAt, "0.7")
+      ),
+      ...products.map((p) => url(`${base}/producto/${encodeURIComponent(p.slug)}`, p.updatedAt, "0.8")),
+      `</urlset>`,
+    ].join("\n");
+    res.set("Content-Type", "application/xml").send(lines);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // El envío se coordina por WhatsApp, ya no hay cálculo por provincia.
 
 app.get("/api/categories", async (_req, res, next) => {
