@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchProducts, fetchCategories } from "../lib/api";
 import type { Product, Category } from "../types";
 import ProductCard from "../components/ProductCard";
@@ -9,6 +9,8 @@ export default function Home() {
   const [featured, setFeatured] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [term, setTerm] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Carvex | Detailing Vonixx Argentina";
@@ -26,6 +28,12 @@ export default function Home() {
     .sort((a, b) => (b._count?.products ?? 0) - (a._count?.products ?? 0));
   const totalProducts = categories.reduce((acc, c) => acc + (c._count?.products ?? 0), 0);
 
+  const onSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const t = term.trim();
+    navigate(t ? `/catalogo?q=${encodeURIComponent(t)}` : "/catalogo");
+  };
+
   return (
     <div>
       {/* BANNER */}
@@ -37,6 +45,24 @@ export default function Home() {
         <p className="mt-1 text-slate-600">
           Productos Vonixx originales por tipo de tarea — a pedido, con seguimiento, a todo el país.
         </p>
+
+        {/* BUSCADOR DEL HOME */}
+        <form onSubmit={onSearch} className="mt-6 flex gap-2">
+          <input
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            placeholder="Buscá por nombre… (ej: Iron, cera, pulimento)"
+            aria-label="Buscar producto por nombre"
+            className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-carvex-900"
+          />
+          <button
+            type="submit"
+            className="whitespace-nowrap rounded-xl bg-carvex-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-carvex-800"
+          >
+            Buscar
+          </button>
+        </form>
+
         <div className="mt-6 flex flex-wrap gap-3">
           {loading ? (
             <p className="text-sm text-slate-500">Cargando categorías...</p>

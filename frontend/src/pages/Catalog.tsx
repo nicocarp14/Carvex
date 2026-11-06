@@ -9,13 +9,15 @@ type Sort = "featured" | "price-asc" | "price-desc" | "name";
 export default function Catalog() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") ?? "";
+  const initialQ = searchParams.get("q") ?? "";
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [category, setCategory] = useState(initialCategory);
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(initialQ);
   const [sort, setSort] = useState<Sort>("featured");
   const [maxPrice, setMaxPrice] = useState(40000);
   const [loading, setLoading] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     const categoryName = category
@@ -28,6 +30,7 @@ export default function Catalog() {
 
   useEffect(() => {
     setCategory(searchParams.get("category") ?? "");
+    setQ(searchParams.get("q") ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
@@ -69,6 +72,16 @@ export default function Catalog() {
 
   // Ocultar categorías vacías para no llevar a páginas sin productos
   const visibleCategories = categories.filter((c) => (c._count?.products ?? 1) > 0);
+  const activeFilters =
+    (category ? 1 : 0) + (q ? 1 : 0) + (maxPrice < 40000 ? 1 : 0) + (sort !== "featured" ? 1 : 0);
+
+  // ESC cierra el panel de filtros en mobile
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setFiltersOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [filtersOpen]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -78,8 +91,23 @@ export default function Catalog() {
       </p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[240px_1fr]">
-        {/* FILTROS */}
-        <aside className="h-fit rounded-2xl border border-slate-200 p-5 lg:sticky lg:top-20">
+        {/* FILTROS — colapsable en mobile, siempre visible en desktop */}
+        <button
+          type="button"
+          onClick={() => setFiltersOpen((v) => !v)}
+          aria-expanded={filtersOpen}
+          aria-controls="catalog-filters"
+          className="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold lg:hidden"
+        >
+          <span>
+            Filtros{activeFilters ? ` (${activeFilters})` : ""}
+          </span>
+          <span aria-hidden="true">{filtersOpen ? "▲" : "▼"}</span>
+        </button>
+        <aside
+          id="catalog-filters"
+          className={`${filtersOpen ? "block" : "hidden"} h-fit rounded-2xl border border-slate-200 p-5 lg:sticky lg:top-20 lg:block`}
+        >
           <label className="block text-sm font-semibold">Buscar</label>
           <input
             value={q}
