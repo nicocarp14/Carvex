@@ -5,6 +5,7 @@ import { formatPrice } from "../lib/format";
 import { useCart } from "../store/cart";
 import { flyToCart } from "../lib/flyToCart";
 import ProductImage from "./ProductImage";
+import VariantModal from "./VariantModal";
 
 export default function ProductCard({ product }: { product: Product }) {
   const add = useCart((s) => s.add);
@@ -22,6 +23,7 @@ export default function ProductCard({ product }: { product: Product }) {
       };
   const variantCount = variants.length > 0 ? variants.length : 1;
   const [added, setAdded] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const handleAdd = (e: React.MouseEvent<HTMLButtonElement>) => {
     add(product, startingVariant);
     flyToCart(e.currentTarget);
@@ -70,12 +72,19 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="text-xs text-slate-500">Venta a pedido · 3-7 días hábiles</p>
 
         {variantCount > 1 ? (
-          <Link
-            to={`/producto/${product.slug}`}
-            className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-carvex-800"
-          >
-            Elegir tamaño
-          </Link>
+          <>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-sm font-semibold text-white transition hover:bg-carvex-800"
+            >
+              Elegir tamaño
+            </button>
+            <VariantModal
+              product={product}
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+            />
+          </>
         ) : (
           <button
             onClick={handleAdd}
