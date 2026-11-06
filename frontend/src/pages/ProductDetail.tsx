@@ -53,9 +53,30 @@ export default function ProductDetail() {
     );
 
   const related = product.related ?? [];
+  // Guard: productos legacy sin variants usan price/size como única presentación.
+  const variants =
+    product.variants && product.variants.length > 0 ? product.variants : [];
+  const legacyVariant = {
+    id: (product.size ?? "unico").toLowerCase().replace(/[^a-z0-9]+/g, "-") || "unico",
+    size: product.size ?? "",
+    price: product.price,
+    originalPrice: product.originalPrice,
+  };
   const selectedVariant =
-    product.variants.find((variant) => variant.id === selectedVariantId) ?? product.variants[0];
-  if (!selectedVariant) return null;
+    variants.find((variant) => variant.id === selectedVariantId) ??
+    variants[0] ??
+    legacyVariant;
+
+  if (!product || (!variants.length && !legacyVariant.price)) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-20 text-center text-slate-500">
+        <p>No encontramos ese producto.</p>
+        <Link to="/catalogo" className="mt-3 inline-block font-semibold text-carvex-600 hover:underline">
+          Ver catálogo →
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
@@ -81,24 +102,40 @@ export default function ProductDetail() {
           <h1 className="mt-4 font-display text-3xl font-bold">{product.name}</h1>
           <p className="text-sm text-slate-500">{product.brand}</p>
 
-          {product.variants.length > 1 && (
-            <div className="mt-4">
-              <label htmlFor="product-variant" className="mb-1 block text-sm font-medium">
-                Presentación
-              </label>
-              <select
-                id="product-variant"
-                value={selectedVariant.id}
-                onChange={(event) => setSelectedVariantId(event.target.value)}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-carvex-500 sm:max-w-xs"
-              >
-                {product.variants.map((variant) => (
-                  <option key={variant.id} value={variant.id}>
-                    {variant.size} · {formatPrice(variant.price)}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Presentación: botones (una sola card por producto, varios tamaños) */}
+          {variants.length > 1 && (
+            <fieldset className="mt-5">
+              <legend className="text-sm text-slate-600">
+                Volumen:{" "}
+                <span className="font-semibold text-slate-900">{selectedVariant.size}</span>
+              </legend>
+              <div className="mt-3 flex flex-wrap gap-3" role="radiogroup" aria-label="Presentación">
+                {variants.map((variant) => {
+                  const isActive = variant.id === selectedVariant.id;
+                  return (
+                    <button
+                      key={variant.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => setSelectedVariantId(variant.id)}
+                      className={`min-w-[120px] rounded-xl border-2 px-4 py-3 text-center transition sm:min-w-[140px] ${
+                        isActive
+                          ? "border-carvex-900 bg-carvex-50 shadow-sm"
+                          : "border-slate-200 bg-white hover:border-slate-400"
+                      }`}
+                    >
+                      <span className={`block text-sm font-bold ${isActive ? "text-carvex-900" : "text-slate-800"}`}>
+                        {variant.size}
+                      </span>
+                      <span className="mt-0.5 block text-xs font-medium text-slate-500">
+                        {formatPrice(variant.price)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
           )}
 
           <div className="mt-4 flex items-baseline gap-3">

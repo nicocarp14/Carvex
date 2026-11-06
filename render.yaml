@@ -3,7 +3,7 @@ services:
     name: carvex-api
     runtime: node
     plan: free
-    buildCommand: npm ci && npm --prefix backend run prisma:generate && npm run build:backend
+    buildCommand: npm ci && npm --prefix backend run prisma:generate && npm --prefix backend run prisma:migrate:deploy && npm run build:backend
     startCommand: npm --prefix backend run start
     healthCheckPath: /api/health
     envVars:

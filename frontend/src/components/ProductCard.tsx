@@ -6,9 +6,19 @@ import ProductImage from "./ProductImage";
 
 export default function ProductCard({ product }: { product: Product }) {
   const add = useCart((s) => s.add);
-  const startingVariant = product.variants.reduce((lowest, variant) =>
-    variant.price < lowest.price ? variant : lowest,
-  );
+  // Guard: si variants viene vacío, se usa price/size legacy como única variante.
+  const variants = product.variants && product.variants.length > 0 ? product.variants : [];
+  const startingVariant = variants.length > 0
+    ? variants.reduce((lowest, variant) =>
+        variant.price < lowest.price ? variant : lowest,
+      )
+    : {
+        id: (product.size ?? "unico").toLowerCase().replace(/[^a-z0-9]+/g, "-") || "unico",
+        size: product.size ?? "",
+        price: product.price,
+        originalPrice: product.originalPrice,
+      };
+  const variantCount = variants.length > 0 ? variants.length : 1;
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
@@ -26,8 +36,8 @@ export default function ProductCard({ product }: { product: Product }) {
 
       <div className="flex flex-1 flex-col p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-carvex-600">
-          {product.brand} · {product.variants.length > 1
-            ? `${product.variants.length} presentaciones`
+          {product.brand} · {variantCount > 1
+            ? `${variantCount} presentaciones`
             : startingVariant.size}
         </p>
         <Link to={`/producto/${product.slug}`}>
@@ -39,7 +49,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
         <div className="mt-3 flex items-baseline gap-2">
           <span className="text-lg font-bold text-carvex-900">
-            {product.variants.length > 1 ? "Desde " : ""}
+            {variantCount > 1 ? "Desde " : ""}
             {formatPrice(startingVariant.price)}
           </span>
           {startingVariant.originalPrice && (
@@ -50,7 +60,7 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
         <p className="text-xs text-slate-500">Venta a pedido · 3-7 días hábiles</p>
 
-        {product.variants.length > 1 ? (
+        {variantCount > 1 ? (
           <Link
             to={`/producto/${product.slug}`}
             className="mt-4 rounded-lg bg-carvex-900 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-carvex-800"

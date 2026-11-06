@@ -1,12 +1,12 @@
 # Carvex
 
-Ecommerce de productos **Vonixx** para comercios y entusiastas del detailing. Argentina, precios en ARS, pagos con **Mercado Pago**, venta **100% online y a pedido** (sin stock físico: el pedido se compra al proveedor tras la confirmación del pago).
+Ecommerce de productos **Vonixx** para comercios y entusiastas del detailing en Argentina. Precios en ARS, venta **100% online y a pedido** (sin stock físico: el pedido se compra al proveedor tras coordinarlo por WhatsApp).
 
 ## Stack
 
 - **Frontend:** React + Vite + TypeScript + Tailwind CSS + React Router + Zustand
 - **Backend:** Node.js + Express + TypeScript + Prisma + PostgreSQL
-- **Pagos:** Mercado Pago Checkout Pro (Sprint 2)
+- **Checkout:** WhatsApp (se crea el pedido en Neon y se abre el chat con el detalle; pago y envío se coordinan ahí)
 - **Diseño:** azul oscurito (`#0a1628` / `#0d1b2e`) y blanco, acento azul eléctrico
 
 ## Monorepo
@@ -38,7 +38,7 @@ npm run seed                # carga los 25 Vonixx
 
 ## Modelo a pedido
 
-No hay inventario. Flujo: cliente paga -> pedido `PENDIENTE` -> admin confirma con el distribuidor -> `PREPARANDO` -> `ENVIADO` (con tracking) -> `ENTREGADO`. La ficha muestra "Venta a pedido · Demora estimada: 3-7 días hábiles".
+No hay inventario. Flujo: cliente pide por WhatsApp -> pedido `PENDIENTE` -> admin confirma con el distribuidor -> `PREPARANDO` -> `ENVIADO` (con tracking) -> `ENTREGADO`. La ficha muestra "Venta a pedido · Demora estimada: 3-7 días hábiles". Un producto puede tener varias presentaciones (tamaños) en una sola card; el precio de la card es el más bajo ("Desde").
 
 ## Deploy
 
@@ -57,5 +57,15 @@ automático para evitarlo: ver [`KEEPALIVE.md`](./KEEPALIVE.md).
 
 ## Próximos sprints
 
-- **Sprint 4:** Mercado Pago real (hoy es demo)
-- **Sprint 5:** Fotos reales, SEO, analytics
+- **Sprint 4:** Recrear los 5 productos con las fotos de `frontend/public/productos/` (Alumax con 2-3 presentaciones en 1 producto, resto con 1 presentación)
+- **Sprint 5:** SEO, analytics
+
+## Seguridad (IMPORTANTE)
+
+El repo antes contenía un `CONTEXT.md` con credenciales. Ya se sacó del repo y de `.gitignore`, pero **el historial de Git lo conserva** en commits viejos (repo público). Por eso hay que rotar:
+
+1. **Cambiar `ADMIN_PASSWORD`**: en `backend/.env` local poner una clave nueva y correr `npm run seed`. En Render, cambiar `ADMIN_PASSWORD` y redeployar.
+2. **Cambiar `JWT_SECRET`**: generar uno largo y aleatorio, ponerlo en Render (`JWT_SECRET`) y en local si lo usás. Al cambiarlo se invalidan todas las sesiones del panel.
+3. **Variables en producción**: `ADMIN_EMAIL` / `ADMIN_PASSWORD` solo se usan al correr el seed. `JWT_SECRET` es lo que firma los tokens del panel.
+
+No commitees archivos con credenciales (`CONTEXT.md`, `.env`, `.env.local`).

@@ -32,6 +32,7 @@ export const buildWhatsAppMessage = (opts: {
   lines.push(`Teléfono: ${customerPhone}`);
   lines.push("");
   lines.push("Envío: a coordinar por este chat.");
+  lines.push("Pago: a coordinar por este chat.");
 
   return lines.join("\n");
 };
