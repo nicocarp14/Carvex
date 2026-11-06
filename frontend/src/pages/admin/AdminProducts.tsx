@@ -334,7 +334,7 @@ export default function AdminProducts() {
                 value={form.imageUrl}
                 onChange={(e) => set("imageUrl", e.target.value)}
                 className={inputCls}
-                placeholder="/images/producto.jpg (opcional)"
+                placeholder="/producto.jpg (opcional)"
               />
             </div>
 

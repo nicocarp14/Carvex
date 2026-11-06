@@ -51,7 +51,7 @@ export default function Home() {
           <input
             value={term}
             onChange={(e) => setTerm(e.target.value)}
-            placeholder="Buscá por nombre… (ej: Iron, cera, pulimento)"
+            placeholder="Buscá por nombre… (ej: Alumax, cera, pulimento)"
             aria-label="Buscar producto por nombre"
             className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-carvex-900"
           />
@@ -63,26 +63,7 @@ export default function Home() {
           </button>
         </form>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          {loading ? (
-            <p className="text-sm text-slate-500">Cargando categorías...</p>
-          ) : (
-            visibleCategories.map((c) => (
-              <Link
-                key={c.slug}
-                to={`/catalogo?category=${c.slug}`}
-                className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:border-carvex-900 hover:bg-carvex-900 hover:text-white"
-              >
-                {c.name}
-                {c._count?.products != null ? (
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600 [a:hover>&]:bg-white/20 [a:hover>&]:text-white">
-                    {c._count.products}
-                  </span>
-                ) : null}
-              </Link>
-            ))
-          )}
-        </div>
+        {/* CTA CATÁLOGO */}
         <div className="mt-8 flex flex-col gap-6 rounded-3xl bg-carvex-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
           <div>
             <h3 className="font-display text-xl font-bold md:text-2xl">
