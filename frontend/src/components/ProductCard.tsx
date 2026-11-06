@@ -37,7 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="flex flex-1 flex-col p-4">
         <p className="text-xs font-semibold uppercase tracking-wider text-carvex-600">
           {product.brand} · {variantCount > 1
-            ? `${variantCount} presentaciones`
+            ? `${variantCount} tamaños`
             : startingVariant.size}
         </p>
         <Link to={`/producto/${product.slug}`}>

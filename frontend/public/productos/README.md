@@ -4,7 +4,7 @@ Estas fotos se subieron para crear los productos directamente desde el panel:
 
 | Archivo | Producto |
 |---|---|
-| `alumax.jpg` | Vonixx Alumax (ej: 500 ml y 1,5 L como 2 presentaciones en 1 producto) |
+| `alumax.jpg` | Vonixx Alumax (ej: 500 ml y 1,5 L como 2 tamaños en 1 producto) |
 | `Darker.jpg` | Vonixx Darker |
 | `Hybrid-wax.jpg` | Vonixx Hybrid Wax |
 | `Removex.jpg` | Vonixx Removex |

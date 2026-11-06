@@ -56,7 +56,7 @@ export async function createOrder(prisma: PrismaClient, input: CreateOrderInput)
     return { product, variant, quantity: item.qty };
   });
 
-  // Sin envío calculado: el total es la suma de las presentaciones elegidas.
+  // Sin envío calculado: el total es la suma de los tamaños elegidos.
   const subtotal = selectedItems.reduce(
     (acc, item) => acc + item.variant.price * item.quantity,
     0,

@@ -38,7 +38,7 @@ npm run seed                # carga los 25 Vonixx
 
 ## Modelo a pedido
 
-No hay inventario. Flujo: cliente pide por WhatsApp -> pedido `PENDIENTE` -> admin confirma con el distribuidor -> `PREPARANDO` -> `ENVIADO` (con tracking) -> `ENTREGADO`. La ficha muestra "Venta a pedido · Demora estimada: 3-7 días hábiles". Un producto puede tener varias presentaciones (tamaños) en una sola card; el precio de la card es el más bajo ("Desde").
+No hay inventario. Flujo: cliente pide por WhatsApp -> pedido `PENDIENTE` -> admin confirma con el distribuidor -> `PREPARANDO` -> `ENVIADO` (con tracking) -> `ENTREGADO`. La ficha muestra "Venta a pedido · Demora estimada: 3-7 días hábiles". Un producto puede tener varios tamaños en una sola card; el precio de la card es el más bajo ("Desde").
 
 ## Deploy
 
@@ -57,7 +57,7 @@ automático para evitarlo: ver [`KEEPALIVE.md`](./KEEPALIVE.md).
 
 ## Próximos sprints
 
-- **Sprint 4:** Recrear los 5 productos con las fotos de `frontend/public/productos/` (Alumax con 2-3 presentaciones en 1 producto, resto con 1 presentación)
+- **Sprint 4:** Recrear los 5 productos con las fotos de `frontend/public/productos/` (Alumax con 2-3 tamaños en 1 producto, resto con 1 presentación)
 - **Sprint 5:** SEO, analytics
 
 ## Seguridad (IMPORTANTE)

@@ -229,7 +229,7 @@ export default function AdminProducts() {
             <div className="sm:col-span-2 lg:col-span-3">
               <div className="mb-2 flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-800">Presentaciones y precios *</h3>
+                  <h3 className="text-sm font-semibold text-slate-800">Tamaños y precios *</h3>
                   <p className="text-xs text-slate-500">
                     Una sola ficha e imagen; agregá un tamaño y precio por cada opción.
                   </p>
