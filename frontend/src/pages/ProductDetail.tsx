@@ -115,7 +115,7 @@ export default function ProductDetail() {
                 Volumen:{" "}
                 <span className="font-semibold text-slate-900">{selectedVariant.size}</span>
               </legend>
-              <div className="mt-3 flex flex-wrap gap-3" role="radiogroup" aria-label="Presentación">
+              <div className="mt-3 flex flex-wrap gap-3" role="radiogroup" aria-label="Tamaños disponibles">
                 {variants.map((variant) => {
                   const isActive = variant.id === selectedVariant.id;
                   return (

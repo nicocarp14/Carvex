@@ -80,7 +80,7 @@ export default function Checkout() {
           ✓
         </div>
         <h1 className="mt-6 font-display text-3xl font-bold">
-          ¡Pedido #{success.orderId} registrado!
+          ¡Pedido registrado!
         </h1>
         <p className="mt-3 text-slate-600">
           El pedido quedó registrado. En WhatsApp vas a encontrar el detalle para enviárnoslo y
@@ -161,7 +161,7 @@ export default function Checkout() {
                   value={form.customerPhone}
                   onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
                   className={inputCls}
-                  placeholder="11 1234-5678"
+                  placeholder="3794-123456"
                 />
               </div>
             </div>

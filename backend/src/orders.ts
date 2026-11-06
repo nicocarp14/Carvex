@@ -52,7 +52,7 @@ export async function createOrder(prisma: PrismaClient, input: CreateOrderInput)
     const variant = item.variantId
       ? variants.find((candidate) => candidate.id === item.variantId)
       : variants[0];
-    if (!variant) throw new Error(`Presentación no encontrada para ${product.name}`);
+    if (!variant) throw new Error(`Tamaño no encontrado para ${product.name}`);
     return { product, variant, quantity: item.qty };
   });
 
