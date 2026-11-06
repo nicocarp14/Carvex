@@ -230,10 +230,6 @@ export default function Checkout() {
               <span>Subtotal</span>
               <span>{formatPrice(subtotal)}</span>
             </div>
-            <div className="flex justify-between text-slate-500">
-              <span>Envío</span>
-              <span>A coordinar</span>
-            </div>
             <div className="flex justify-between font-bold">
               <span>Total</span>
               <span>{formatPrice(subtotal)}</span>

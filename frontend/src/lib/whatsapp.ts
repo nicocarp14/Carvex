@@ -26,7 +26,6 @@ export const buildWhatsAppMessage = (opts: {
   }
   lines.push("");
   lines.push(`Subtotal: $${subtotal.toLocaleString("es-AR")}`);
-  lines.push(`Envío: a coordinar`);
   lines.push(`Total: $${subtotal.toLocaleString("es-AR")}`);
   lines.push("");
   lines.push("Mis datos:");
@@ -34,9 +33,6 @@ export const buildWhatsAppMessage = (opts: {
   lines.push(`Email: ${customerEmail}`);
   lines.push(`Teléfono: ${customerPhone}`);
   lines.push("");
-  lines.push("Envío: a coordinar por este chat.");
-  lines.push("Pago: a coordinar por este chat.");
-
   return lines.join("\n");
 };
 

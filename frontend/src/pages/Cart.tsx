@@ -71,10 +71,6 @@ export default function Cart() {
               <span className="text-slate-300">Subtotal</span>
               <span>{formatPrice(total)}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-300">Envío</span>
-              <span>A coordinar por WhatsApp</span>
-            </div>
             <div className="border-t border-white/10 pt-3 text-base font-bold">
               <div className="flex justify-between">
                 <span>Total</span>

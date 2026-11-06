@@ -146,10 +146,6 @@ export default function AdminOrderDetail() {
                 <span>Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-slate-500">
-                <span>Envío</span>
-                <span>A coordinar por WhatsApp</span>
-              </div>
               <div className="flex justify-between text-base font-bold text-carvex-900">
                 <span>Total</span>
                 <span>{formatPrice(order.total)}</span>
@@ -259,10 +255,6 @@ export default function AdminOrderDetail() {
               <div>
                 <dt className="text-xs uppercase tracking-wide text-slate-500">Canal</dt>
                 <dd className="text-slate-800">WhatsApp</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-slate-500">Estado del pago</dt>
-                <dd className="text-slate-800">A coordinar con el cliente</dd>
               </div>
               {order.paymentId && (
                 <div>
