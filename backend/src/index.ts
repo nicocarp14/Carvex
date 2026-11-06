@@ -30,7 +30,15 @@ app.use(
 );
 app.use(express.json());
 
-app.get("/api/health", (_req, res) => res.json({ ok: true, service: "carvex-api" }));
+app.get("/api/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ ok: true, service: "carvex-api", db: true });
+  } catch (err) {
+    console.error("Health check: falló la BD", err);
+    res.status(503).json({ ok: false, service: "carvex-api", db: false });
+  }
+});
 
 // Sitemap dinámico (también queda el estático en frontend/public)
 app.get("/sitemap.xml", async (_req, res, next) => {
