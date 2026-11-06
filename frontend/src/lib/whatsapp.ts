@@ -16,7 +16,7 @@ export const buildWhatsAppMessage = (opts: {
   const { items, subtotal, customerName, customerEmail, customerPhone, orderId } = opts;
 
   const lines: string[] = [];
-  lines.push(`Hola Carvex, quiero hacer un pedido (Nº ${orderId}):`);
+  lines.push(`Hola Carvex, quiero hacer un pedido (Nº ${orderId + 82}):`);
   lines.push("");
   lines.push("Productos:");
   for (const { product, variant, qty } of items) {
