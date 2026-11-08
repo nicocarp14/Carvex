@@ -5,12 +5,14 @@ import type { Product, Category } from "../types";
 import ProductCard from "../components/ProductCard";
 import HeroBanner from "../components/HeroBanner";
 import InstagramFeed from "../components/InstagramFeed";
+import CatalogRequestModal from "../components/CatalogRequestModal";
 
 export default function Home() {
   const [featured, setFeatured] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [term, setTerm] = useState("");
+  const [catalogRequestOpen, setCatalogRequestOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,19 +84,21 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* BANNER PROMO — buscasalgo */}
-        <Link
-          to="/catalogo"
-          className="mt-8 block overflow-hidden rounded-3xl border border-slate-200 shadow-sm transition hover:shadow-md"
-          aria-label="Descubrí todo el catálogo Vonixx"
+        {/* BANNER PROMO — buscasalgo → pide catálogo con selector */}
+        <button
+          type="button"
+          onClick={() => setCatalogRequestOpen(true)}
+          className="mt-8 block w-full overflow-hidden rounded-3xl border border-slate-200 text-left shadow-sm transition hover:shadow-md"
+          aria-label="Buscás algo para detailing — pedí el catálogo completo"
         >
           <img
             src="/buscasalgo.jpg"
-            alt="Buscás algo para detailing — descubrí los productos Vonixx originales en Carvex"
+            alt="Buscás algo para detailing — pedí el catálogo completo de Vonixx en Carvex"
             className="block h-auto w-full"
             loading="lazy"
           />
-        </Link>
+        </button>
+        <CatalogRequestModal open={catalogRequestOpen} onClose={() => setCatalogRequestOpen(false)} />
       </section>
 
       {/* DESTACADOS */}
