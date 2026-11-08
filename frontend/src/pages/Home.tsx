@@ -4,6 +4,7 @@ import { fetchProducts, fetchCategories } from "../lib/api";
 import type { Product, Category } from "../types";
 import ProductCard from "../components/ProductCard";
 import HeroBanner from "../components/HeroBanner";
+import InstagramFeed from "../components/InstagramFeed";
 
 export default function Home() {
   const [featured, setFeatured] = useState<Product[]>([]);
@@ -125,6 +126,9 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* INSTAGRAM — @carvexcorrientes (arriba de Venta a pedido) */}
+      <InstagramFeed />
 
       {/* COMO FUNCIONA */}
       <section className="mx-auto max-w-7xl px-4 py-14">
