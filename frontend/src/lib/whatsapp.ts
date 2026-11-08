@@ -1,9 +1,19 @@
 import type { CartItem } from "../types";
 
-// Número de WhatsApp de Carvex (formato internacional sin +, ej: 5491123456789).
-// Se puede sobreescribir con VITE_WHATSAPP_NUMBER en Vercel.
-const WHATSAPP_NUMBER =
+// Números de WhatsApp de Carvex (formato internacional sin +, ej: 5491123456789).
+// Se pueden sobreescribir con VITE_WHATSAPP_NUMBER / VITE_WHATSAPP_NUMBER_2 en Vercel.
+export const WHATSAPP_NUMBER =
   (import.meta.env.VITE_WHATSAPP_NUMBER as string | undefined) ?? "5493794949990";
+
+export const WHATSAPP_NUMBER_2 =
+  (import.meta.env.VITE_WHATSAPP_NUMBER_2 as string | undefined) ?? "5493794638380";
+
+export const SELLERS = [
+  { id: "primary", label: "Nico", number: WHATSAPP_NUMBER },
+  { id: "partner", label: "Facu", number: WHATSAPP_NUMBER_2 },
+] as const;
+
+export type SellerId = (typeof SELLERS)[number]["id"];
 
 export const buildWhatsAppMessage = (opts: {
   items: CartItem[];
@@ -36,7 +46,7 @@ export const buildWhatsAppMessage = (opts: {
   return lines.join("\n");
 };
 
-export const buildWhatsAppUrl = (message: string) => {
-  const number = WHATSAPP_NUMBER.replace(/[^\d]/g, "");
-  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+export const buildWhatsAppUrl = (message: string, number = WHATSAPP_NUMBER) => {
+  const digits = number.replace(/[^\d]/g, "");
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`;
 };

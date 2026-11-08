@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../store/cart";
 import { formatPrice } from "../lib/format";
 import { createOrder } from "../lib/api";
-import { buildWhatsAppMessage, buildWhatsAppUrl } from "../lib/whatsapp";
+import { SELLERS, buildWhatsAppMessage, buildWhatsAppUrl } from "../lib/whatsapp";
 import { trackBeginCheckout, trackPurchase } from "../lib/analytics";
 import ProductImage from "../components/ProductImage";
 
@@ -19,6 +19,7 @@ export default function Checkout() {
     customerPhone: "",
   });
   const [acceptOnOrder, setAcceptOnOrder] = useState(false);
+  const [sellerId, setSellerId] = useState<(typeof SELLERS)[number]["id"]>("primary");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState<{ orderId: number; whatsappUrl: string } | null>(null);
@@ -58,6 +59,7 @@ export default function Checkout() {
           customerPhone: form.customerPhone,
           orderId: data.order.id,
         }),
+        SELLERS.find((s) => s.id === sellerId)?.number
       );
 
       if (whatsappWindow && !whatsappWindow.closed) {
@@ -169,6 +171,35 @@ export default function Checkout() {
               </div>
             </div>
           </section>
+
+          {/* A QUIÉN PEDIR */}
+          <fieldset className="rounded-2xl border border-slate-200 p-6">
+            <legend className="px-2 text-sm font-semibold">¿A quién querés pedir?</legend>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              {SELLERS.map((s) => {
+                const active = sellerId === s.id;
+                return (
+                  <label
+                    key={s.id}
+                    className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 text-sm transition ${
+                      active ? "border-carvex-900 bg-carvex-50" : "border-slate-200 hover:border-slate-400"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="seller"
+                      value={s.id}
+                      checked={active}
+                      onChange={() => setSellerId(s.id)}
+                      className="h-4 w-4 accent-carvex-900"
+                    />
+                    <span className="font-semibold">{s.label}</span>
+                    <span className="text-slate-500">· {s.number}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
 
           <label className="flex items-start gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
             <input

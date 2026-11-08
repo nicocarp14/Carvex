@@ -43,7 +43,7 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 py-14">
         <h2 className="font-display text-2xl font-bold">¿Qué buscás hoy?</h2>
         <p className="mt-1 text-slate-600">
-          Productos Vonixx originales por tipo de tarea — a pedido, con seguimiento, a todo el país.
+          Productos Vonixx originales a pedido, con seguimiento, a todo el país.
         </p>
 
         {/* BUSCADOR DEL HOME */}
@@ -80,6 +80,20 @@ export default function Home() {
             Ver catálogo completo →
           </Link>
         </div>
+
+        {/* BANNER PROMO — buscasalgo */}
+        <Link
+          to="/catalogo"
+          className="mt-8 block overflow-hidden rounded-3xl border border-slate-200 shadow-sm transition hover:shadow-md"
+          aria-label="Descubrí todo el catálogo Vonixx"
+        >
+          <img
+            src="/buscasalgo.jpg"
+            alt="Buscás algo para detailing — descubrí los productos Vonixx originales en Carvex"
+            className="block h-auto w-full"
+            loading="lazy"
+          />
+        </Link>
       </section>
 
       {/* DESTACADOS */}
@@ -93,11 +107,21 @@ export default function Home() {
               40 segundos en despertar.
             </p>
           ) : (
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
-              {featured.slice(0, 8).map((p) => (
-                <ProductCard key={p.slug} product={p} />
-              ))}
-            </div>
+            <>
+              <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+                {featured.slice(0, 8).map((p) => (
+                  <ProductCard key={p.slug} product={p} />
+                ))}
+              </div>
+              <div className="mt-10 text-center">
+                <Link
+                  to="/catalogo"
+                  className="inline-block rounded-full bg-carvex-900 px-8 py-3 text-sm font-bold text-white transition hover:bg-carvex-800"
+                >
+                  Ver catálogo completo →
+                </Link>
+              </div>
+            </>
           )}
         </div>
       </section>
