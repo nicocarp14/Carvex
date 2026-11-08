@@ -4,17 +4,18 @@ import { Link } from "react-router-dom";
 const INSTAGRAM_USER = "carvexcorrientes";
 const INSTAGRAM_URL = `https://instagram.com/${INSTAGRAM_USER}`;
 
-// Configurable por env: VITE_ELFSIGHT_WIDGET_ID (Elfsight → Instagram Feed → @carvexcorrientes)
-// Mientras no esté, se muestra un CTA estilizado a Instagram.
-// Pasos: elfsight.com → crear Instagram Feed → copiar el ID del widget → definir la env en Vercel.
+// Elfsight → Instagram Feed → @carvexcorrientes
+// ID tomado del Embed Code de Elfsight (Embed Code, no Share Link).
+// Si se redefine VITE_ELFSIGHT_WIDGET_ID en Vercel, ese override manda.
 const WIDGET_ID =
-  (import.meta.env.VITE_ELFSIGHT_WIDGET_ID as string | undefined) ?? "";
+  (import.meta.env.VITE_ELFSIGHT_WIDGET_ID as string | undefined) ??
+  "8caaa921-8267-4b28-97b5-45f0647c6763";
 
 export default function InstagramFeed() {
   useEffect(() => {
     if (!WIDGET_ID) return;
     const script = document.createElement("script");
-    script.src = "https://apps.elfsight.com/p/platform.js";
+    script.src = "https://elfsightcdn.com/platform.js";
     script.defer = true;
     script.async = true;
     document.body.appendChild(script);
