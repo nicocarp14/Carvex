@@ -30,7 +30,8 @@ export default function Footer() {
           <p className="font-semibold text-white">Contacto</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li>Atención por WhatsApp al hacer tu pedido</li>
-            <li>hola@carvex.com.ar</li>
+            <li>5493794949990</li>
+            <li>5493794638380</li>
           </ul>
         </div>
       </div>

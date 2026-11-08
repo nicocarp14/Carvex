@@ -25,11 +25,7 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  // Solo categorías con productos para no llevar a vacíos (ej: Interior 0)
-  const visibleCategories = categories
-    .filter((c) => (c._count?.products ?? 1) > 0)
-    .sort((a, b) => (b._count?.products ?? 0) - (a._count?.products ?? 0));
-  const totalProducts = categories.reduce((acc, c) => acc + (c._count?.products ?? 0), 0);
+
 
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +63,7 @@ export default function Home() {
         </form>
 
         {/* CTA CATÁLOGO */}
-        <div className="mt-8 flex flex-col gap-6 rounded-3xl bg-carvex-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
+       { /*<div className="mt-8 flex flex-col gap-6 rounded-3xl bg-carvex-900 p-8 text-white md:flex-row md:items-center md:justify-between md:p-10">
           <div>
             <h3 className="font-display text-xl font-bold md:text-2xl">
               Explorá todo el catálogo Vonixx — {totalProducts} productos
@@ -82,7 +78,7 @@ export default function Home() {
           >
             Ver catálogo completo →
           </Link>
-        </div>
+        </div>*/}
 
         {/* BANNER PROMO — buscasalgo → pide catálogo con selector */}
         <button
